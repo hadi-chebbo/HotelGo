@@ -1,7 +1,8 @@
 <?php
 
 namespace Database\Seeders;
-
+use Database\Seeders\HotelSeeder;
+use Database\Seeders\RoomSeeder;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -20,5 +21,8 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         $this->call(UsersTableSeeder::class);
+
+        $this->call(HotelSeeder::class);
+        $this->call(RoomSeeder::class);
     }
 }
