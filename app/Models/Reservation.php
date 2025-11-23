@@ -21,10 +21,10 @@ class Reservation extends Model
         return $this->belongsTo(User::class);
     }
     public function promocode(){
-        return $this->belongsTo(PromoCode::class);
+        return $this->hasOne(PromoCode::class);
     }
     public function payment(){
-        return $this->hasOne(Payment::class);
+        return $this->hasMany(Payment::class);
     }
 
 }

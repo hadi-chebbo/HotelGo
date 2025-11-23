@@ -20,6 +20,6 @@ class PromoCode extends Model
         return $this->belongsTo(Hotel::class);
     }
     public function reservation(){
-        return $this->hasMany(Reservation::class);
+        return $this->belongsTo(Reservation::class);
     }
 }
