@@ -21,7 +21,7 @@ class RoomFactory extends Factory
         $statuses = ['available', 'maintenance'];
 
         return [
-            'hotel_id' => Hotel::factory(), 
+            'hotel_id' => Hotel::inRandomOrder()->first()->id, 
             'type' => $this->faker->randomElement($types),
             'price_per_night' => $this->faker->numberBetween(50, 500), 
             'status' => $this->faker->randomElement($statuses),

@@ -4,16 +4,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Room extends Model
+class Review extends Model
 {
     use HasFactory;
-
-
     protected $fillable=[
-        'type',
-        'price_per_night',
-        'status',
-        'image',
+        'comment',
+        'rating',
+        'user_id',
+        'room_id',
         'hotel_id',
     ];
 }

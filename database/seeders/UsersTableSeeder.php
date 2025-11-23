@@ -15,6 +15,7 @@ class UsersTableSeeder extends Seeder
      */
     public function run(): void
     {
+        User::where('email', 'admin@example.com')->delete();
         //creates a super admin for the website
         User::create([
             'name' => 'admin',

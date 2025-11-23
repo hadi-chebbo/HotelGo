@@ -15,6 +15,7 @@ class Hotel extends Model
         'location',
         'social_links',
         'image',
+        'user_id',
     ];
     protected $casts=[
         'social_links'=>'array',

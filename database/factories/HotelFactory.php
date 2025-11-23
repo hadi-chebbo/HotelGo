@@ -19,7 +19,9 @@ class HotelFactory extends Factory
     {
        return [
             
-            'user_id' => User::factory(),
+            'user_id' => User::factory()->state([
+                'role'=>2,
+            ]),
 
             'name' => $this->faker->company,
             'description' => $this->faker->paragraph,
