@@ -18,13 +18,14 @@ class PaymentFactory extends Factory
     public function definition(): array
     {
         $methods=['CreditCard','Cash','VisaCard'];
-        $statuses=['Sucessful','Failed'];
+        $statuses=['Successful','Failed'];
         return [
-            'reservation_id'=>Reservation::inRandomOrder()->first()->id, 
+            //'reservation_id'=>Reservation::inRandomOrder()->first()->id, 
+            'reservation_id'=>Reservation::inRandomOrder()->first()->id,
             'amount' => $this->faker->randomFloat(2, 50, 1000),
             'method'=> $this->faker->randomElement($methods),
             'status'=> $this->faker->randomElement($statuses),
-            'transaction_date'=>$this->faker->now(),
+            'transaction_date'=>now(),
 
         ];
     }

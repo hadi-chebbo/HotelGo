@@ -30,5 +30,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PromoCodeSeeder::class);
 
         $this->call(ReservationSeeder::class);
+
+        $this->call(PaymentSeeder::class);
     }
 }

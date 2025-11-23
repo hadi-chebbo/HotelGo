@@ -14,4 +14,15 @@ class Review extends Model
         'room_id',
         'hotel_id',
     ];
+    public function hotel(){
+        return $this->belongsTo(Hotel::class);
+    }
+    public function room(){
+        return $this->belongsTo(Room::class);
+    }
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+    
+
 }

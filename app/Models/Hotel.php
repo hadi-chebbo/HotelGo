@@ -20,4 +20,16 @@ class Hotel extends Model
     protected $casts=[
         'social_links'=>'array',
     ];
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+    public function rooms(){
+        return $this->hasMany(Room::class);
+    }
+    public function reviews(){
+        return $this->hasMany(Review::class);
+    }
+    public function promocodes(){
+        return $this->hasMany(PromoCode::class);
+    }
 }

@@ -16,4 +16,10 @@ class PromoCode extends Model
         'start_date',
         'end_date'
     ];
+    public function hotel(){
+        return $this->belongsTo(Hotel::class);
+    }
+    public function reservation(){
+        return $this->hasMany(Reservation::class);
+    }
 }
