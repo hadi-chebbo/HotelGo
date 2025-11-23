@@ -8,6 +8,7 @@ use Database\Seeders\UserTableSeeder;
 use Database\Seeders\HotelSeeder;
 use Database\Seeders\RoomSeeder;
 use Database\Seeders\PromoCodeSeeder;
+use Database\Seeders\ReservationSeeder;
 
 
 class DatabaseSeeder extends Seeder
@@ -27,5 +28,7 @@ class DatabaseSeeder extends Seeder
         $this->call(RoomSeeder::class);
 
         $this->call(PromoCodeSeeder::class);
+
+        $this->call(ReservationSeeder::class);
     }
 }
