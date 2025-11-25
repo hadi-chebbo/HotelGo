@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('hotel_id')->onDelete('cascade');
+            $table->foreignId('hotel_id')->constrained()->onDelete('cascade');
             $table->string('type');
             $table->decimal('price_per_night');
             $table->string('status');
