@@ -19,7 +19,7 @@
         <!-- Phone number -->
         <div class="mt-4">
             <x-input-label for="phone" :value="__('phone')" />
-            <x-text-input id="phone" class="block mt-1 w-full" type="phone" name="phone" :value="old('phone')" required autocomplete="username" />
+            <x-text-input id="phone" class="block mt-1 w-full" type="text" name="phone" :value="old('phone')" required autocomplete="username" />
             <x-input-error :messages="$errors->get('phone')" class="mt-2" />
         </div>
 
