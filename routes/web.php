@@ -18,13 +18,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+Route::prefix('hotel')->controller(HotelController::class)->group(function () {
+    Route::get('/index' , 'index');
+    Route::get('/{hotel}/show', 'show');
 
-Route::post('/hotel/store',[HotelController::class, 'store']);
-Route::get('/hotel/{hotel}/show', [HotelController::class , 'show']);
-
-Route::middleware([SystemAdminMiddleware::class])->group(function () {
-    Route::get('/hotel/index',[HotelController::class , 'index']);
-    Route::delete('/hotel/{hotel}/delete', [HotelController::class, 'destroy']);
+    Route::middleware([SystemAdminMiddleware::class])->group(function () {
+        Route::post('/create','store');
+        Route::delete('/{hotel}/delete', 'destroy');
+    });
 });
+
 
 require __DIR__.'/auth.php';
