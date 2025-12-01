@@ -15,14 +15,14 @@ class HotelAdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(!request->user()){
+        if(!$request->user()){
             return response()->json([
                 'message' => 'Unauthorized'
             ],401);
         }
 
-        if(request->user()->role != 2){
-            return respones()->json([
+        if($request->user()->role != 2){
+            return response()->json([
                 'message' => 'Forbidden'
             ],403);
         }
