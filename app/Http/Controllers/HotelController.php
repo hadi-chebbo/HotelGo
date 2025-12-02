@@ -46,13 +46,36 @@ class HotelController extends Controller
         ]);
     }
 
+    public function update(Request $request,Hotel $hotel){
+        $validated = $request->validate([
+            'name' => 'required|string|max:25',
+            'description'=> 'nullable|string',
+            'email' => 'required|email|max:100',
+            'location' => 'required|string',
+            'social_links' => 'required',
+            'image' => 'nullable|image',
+            'admin_phone' => 'required|string|max:10',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('hotels', 'public'); 
+            $validated['image'] = $imagePath;
+        }
+
+        $hotel->update($validated);
+
+        return respones()->json([
+            'message' => 'Hotel updated successfully',
+            'hotel' => $hotel
+        ]);
+
+        
+    }
+
     public function destroy(Hotel $hotel){
-        $hotel_delete = Hotel::findOrFail($hotel->id);
 
-        $hotel_delete->user()->delete();
-
-        $hotel_delete->delete();
-
+        $hotel->delete();
+        //deletine the hotel and the associated user because of cascade
         return response()->json([
             'message' => 'hotel deleted successfully',
         ]);   
@@ -68,6 +91,13 @@ class HotelController extends Controller
             'data' => $hotels
         ]);
     }
+
+    public function adminIndex(){
+        $hotels = Hotel::all();
+
+        return view('systemAdmin.hotels.index')->with('hotels', $hotels);
+    }
+
 
     public function show(Hotel $hotel){
         $hotel_find = Hotel::findOrFail($hotel->id);

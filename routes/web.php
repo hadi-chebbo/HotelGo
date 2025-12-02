@@ -21,12 +21,7 @@ Route::middleware('auth')->group(function () {
 Route::prefix('hotel')->controller(HotelController::class)->group(function () {
     Route::get('/index' , 'index');
     Route::get('/{hotel}/show', 'show');
-
-    Route::middleware([SystemAdminMiddleware::class])->group(function () {
-        Route::post('/create','store');
-        Route::delete('/{hotel}/delete', 'destroy');
-    });
 });
 
-
 require __DIR__.'/auth.php';
+require __DIR__.'/systemAdmin/hotel.php';
