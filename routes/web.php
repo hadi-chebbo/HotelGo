@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HotelController;
@@ -26,6 +27,15 @@ Route::prefix('hotel')->controller(HotelController::class)->group(function () {
         Route::post('/create','store');
         Route::delete('/{hotel}/delete', 'destroy');
     });
+});
+
+Route::prefix('admin')->group(function () {
+
+
+    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+    Route::post('/users/{user}/block', [UserController::class, 'block'])->name('admin.users.block');
+    Route::post('/users/{user}/unblock', [UserController::class, 'unblock'])->name('admin.users.unblock');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
 });
 
 

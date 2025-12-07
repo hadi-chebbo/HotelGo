@@ -10,9 +10,8 @@ class UserController extends Controller
 {
     //
       
-    public function block($id)
+    public function block(User $user)
     {
-        $user = User::findOrFail($id);
         $user->blocked = 1;
         $user->save();
 
@@ -23,9 +22,8 @@ class UserController extends Controller
     }
 
    
-    public function unblock($id)
+    public function unblock(User $user)
     {
-        $user = User::findOrFail($id);
         $user->blocked = 0;
         $user->save();
 
@@ -40,12 +38,9 @@ class UserController extends Controller
         return view('UserMgmt',compact($users));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
-        
-        $user = User::findOrFail($id);
 
-        
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
