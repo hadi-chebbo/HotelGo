@@ -1,6 +1,6 @@
 <x-guest-layout>
      @slot('title')
-        Welcome Back!
+        Welcome !
     @endslot
 
     @slot('description')
