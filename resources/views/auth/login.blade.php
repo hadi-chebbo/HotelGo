@@ -1,7 +1,14 @@
 <x-guest-layout>
+    @slot('title')
+        Welcome Back!
+    @endslot
+
+    @slot('description')
+        Login to your account to book rooms, manage your stays, and earn rewards effortlessly.
+    @endslot
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
-
+    
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
