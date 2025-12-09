@@ -21,7 +21,7 @@ class Hotel extends Model
         'social_links'=>'array',
     ];
     public function user(){
-        return $this->belongsTo(User::class);
+        return   $this->belongsTo(User::class);
     }
     public function rooms(){
         return $this->hasMany(Room::class);

@@ -18,9 +18,9 @@
             <a href="{{ route('dashboard') }}" class="block px-4 py-2 rounded hover:bg-gray-200 {{ request()->routeIs('systemAdmin.dashboard') ? 'bg-gray-200 font-semibold' : '' }}">
                 Dashboard
             </a>
-            {{-- <a href="{{ route('systemAdmin.hotels.index') }}" class="block px-4 py-2 rounded hover:bg-gray-200 {{ request()->routeIs('systemAdmin.hotels.*') ? 'bg-gray-200 font-semibold' : '' }}">
+            <a href="{{ route('admin.hotel.index') }}" class="block px-4 py-2 rounded hover:bg-gray-200 {{ request()->routeIs('systemAdmin.hotels.*') ? 'bg-gray-200 font-semibold' : '' }}">
                 Hotels
-            </a> --}}
+            </a>
             {{-- <a href="{{ route('systemAdmin.users.index') }}" class="block px-4 py-2 rounded hover:bg-gray-200 {{ request()->routeIs('systemAdmin.users.*') ? 'bg-gray-200 font-semibold' : '' }}">
                 Users
             </a> --}}
@@ -40,9 +40,9 @@
                 <span>{{ auth()->user()->name }}</span>
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
-                    <button type="submit" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
+                    <x-danger-button type="submit">
                         Logout
-                    </button>
+                    </x-danger-button>
                 </form>
             </div>
         </header>
