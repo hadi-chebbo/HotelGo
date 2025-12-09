@@ -1,4 +1,11 @@
 <x-guest-layout>
+     @slot('title')
+        Welcome !
+    @endslot
+
+    @slot('description')
+        Create your account to book rooms, manage your stays, and earn rewards effortlessly.
+    @endslot
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
