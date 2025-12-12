@@ -1,12 +1,10 @@
 <?php
 
-use App\Http\Controllers\Admin\UserController;
+
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HotelController;
-use App\Http\Controllers\RoomController;
-use App\Http\Middleware\HotelAdminMiddleware;
-use App\Http\Middleware\SystemAdminMiddleware;
+
 
 Route::get('/', function () {
     return view('welcome');
