@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="flex items-center justify-between mb-10">
-    <h1 class="text-2xl font-bold">All Hotels</h1>
+    <h1 class="text-2xl font-bold text-blue-900">System Hotels</h1>
     <x-primary-button onclick="openModal('CreateHotelModal')">Create</x-primary-button>
 </div>
 <!-- Create Modal Component -->

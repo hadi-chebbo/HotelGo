@@ -3,14 +3,14 @@
 <div class="bg-white shadow rounded-lg p-4 hover:shadow-lg transition flex flex-col">
     <!-- Hotel basic info -->
     <div class="flex justify-between items-center">
-        <h3 class="text-xl font-semibold">{{ $hotel->name }}</h3>
+        <h3 class="text-xl font-semibold text-blue-900">{{ $hotel->name }}</h3>
         <span class="text-gray-500 text-sm">⭐ {{ $hotel->rating ?? 'N/A' }} / 5</span>
     </div>
 
     <p class="text-gray-600 mt-1">{{ $hotel->location }}</p>
 
     <!-- Hotel admin info -->
-    <div class="mt-2 text-gray-700 text-sm">
+    <div class="mt-2 text-gray-700 text-sm mb-2">
         <p>Admin: {{ $hotel->user->name ?? 'N/A' }}</p>
         <p>Email: {{ $hotel->user->email ?? 'N/A' }}</p>
     </div>
