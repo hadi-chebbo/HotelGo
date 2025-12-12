@@ -46,16 +46,42 @@ class HotelController extends Controller
         ]);
     }
 
+    public function update(Request $request, Hotel $hotel)
+    {
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'description'=> 'nullable|string',
+        'email' => 'required|email|max:100',
+        'location' => 'required|string',
+        'social_links' => 'nullable|string',
+        'rating' => 'nullable|numeric|min:0|max:5',
+        'image' => 'nullable|image',
+        'admin_phone' => 'required|string|max:15',
+    ]);
+
+    // Handle image if uploaded
+    if ($request->hasFile('image')) {
+        $imagePath = $request->file('image')->store('hotels', 'public'); 
+        $validated['image'] = $imagePath;
+    }
+
+    // Convert social_links string (from textarea) to array or JSON
+    if (isset($validated['social_links'])) {
+        $links = array_filter(array_map('trim', explode("\n", $validated['social_links'])));
+        $validated['social_links'] = $links;
+    }
+
+    $hotel->update($validated);
+
+    return redirect()->back()->with('success', 'Hotel updated successfully');
+    }
+
+
     public function destroy(Hotel $hotel){
-        $hotel_delete = Hotel::findOrFail($hotel->id);
 
-        $hotel_delete->user()->delete();
-
-        $hotel_delete->delete();
-
-        return response()->json([
-            'message' => 'hotel deleted successfully',
-        ]);   
+        $hotel->delete();
+        //deletine the hotel and the associated user because of cascade
+        return redirect()->back()->with('success', 'Hotel deleted successfully'); 
     }
 
    public function index()
@@ -69,11 +95,17 @@ class HotelController extends Controller
         ]);
     }
 
+    public function adminIndex(){
+        $hotels = Hotel::with('user')->get();
+
+        return view('systemAdmin.hotels.index')->with('hotels', $hotels);
+    }
+
+
     public function show(Hotel $hotel){
-        $hotel_find = Hotel::findOrFail($hotel->id);
         return response()->json([
             'status' => 'success',
-            'data' => $hotel_find,
+            'data' => $hotel,
         ]);
     }
 }

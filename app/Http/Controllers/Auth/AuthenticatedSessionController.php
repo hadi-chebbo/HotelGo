@@ -28,6 +28,11 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = Auth::user();
+        if($user->role === 1){
+            return redirect()->intended(route('admin.hotel.index'));
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
