@@ -1,6 +1,10 @@
 <?php
-    use App\Http\Middleware\SystemAdminMiddleware;
-    use App\Http\Controller\UserController;
+
+use App\Http\Controllers\UserController;
+use App\Http\Middleware\SystemAdminMiddleware;
+  
+
+use Illuminate\Support\Facades\Route;
 
     Route::prefix('admin/users')
         ->middleware([SystemAdminMiddleware::class])

@@ -14,17 +14,42 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
+
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-            @include('layouts.navigation')
+
+        <!-- Background Image -->
+        <div class="fixed inset-0 -z-10">
+            <img src="/images/hotel1.jpg"
+                 class="w-full h-full object-cover brightness-50"
+                 alt="Hotel Background">
+        </div>
+
+        <div class="min-h-screen bg-gray-100 bg-opacity-30 dark:bg-gray-900 dark:bg-opacity-30">
+           
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white dark:bg-gray-800 shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
+                <header class="shadow bg-white/20 dark:bg-gray-800/20 backdrop-blur">
+                    <div class="max-w-7xl mx-auto py-6 px-4 bg-gray-300 sm:px-6 lg:px-8 flex items-center justify-between">
+
+                        <!-- LEFT: Page Title -->
+                        <div>
+                            {{ $header }}
+                        </div>
+
+                        <!-- RIGHT: Logout Button -->
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button
+                                class="text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-semibold"
+                            >
+                                Logout
+                            </button>
+                        </form>
+
                     </div>
                 </header>
+
             @endisset
 
             <!-- Page Content -->

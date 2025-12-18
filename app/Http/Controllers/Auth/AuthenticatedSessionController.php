@@ -33,6 +33,13 @@ class AuthenticatedSessionController extends Controller
             return redirect()->intended(route('admin.hotel.index'));
         }
 
+        if ($user->role == 0 && $user->blocked) {
+        Auth::logout(); // log them out immediately
+        return redirect()->back()
+            ->withInput($request->only('email'))
+            ->withErrors(['email' => 'Your account has been blocked. Please contact support.']);
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

@@ -2,7 +2,9 @@
     'id',
     'title' => 'Edit Item',
     'fields' => [],
-    'method' => 'PUT'
+    'method' => 'PUT',
+    'route' => ''
+
 ])
 
 <div id="{{ $id }}" class="fixed inset-0 bg-black/50 hidden justify-center items-center p-4 z-50">
@@ -10,7 +12,7 @@
         <button onclick="closeModal('{{ $id }}')" class="absolute top-2 right-2 text-gray-500 hover:text-black text-lg font-bold">✖</button>
         <h2 class="text-xl font-semibold mb-4">{{ $title }}</h2>
 
-        <form id="{{ $id }}-form" method="POST" action="">
+        <form id="{{ $id }}-form" method="POST" action="{{ $route }}">
             @csrf
             @method($method)    
 

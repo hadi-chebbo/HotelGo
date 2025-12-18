@@ -2,7 +2,9 @@
     'id',           // Unique modal id
     'title' => 'Confirm Deletion',
     'message' => 'Are you sure you want to delete this item? This action cannot be undone.',
-    'route'         // Route for deletion
+    'route' ,       // Route for deletion
+    'method' => 'POST',
+    'confirm'=>'Delete'
 ])
 
 <div id="{{ $id }}" class="fixed inset-0 bg-black/50 hidden justify-center items-center p-4 z-50">
@@ -14,21 +16,22 @@
             <x-secondary-button onclick="closeModal('{{ $id }}')">Cancel</x-secondary-button>
             <form action="{{ $route }}" method="POST" class="inline">
                 @csrf
-                @method('DELETE')
-                <x-danger-button type="submit">Delete</x-danger-button>
+                @if($method !== 'POST')
+                    @method($method)
+                @endif
+                <x-danger-button type="submit">{{ $confirm }}</x-danger-button>
             </form>
         </div>
     </div>
 </div>
 
 <script>
-function openModal(id, route) {
+function openModal(id) {
     const modal = document.getElementById(id);
-    const form = modal.querySelector('form');
-    form.action = route;
     modal.classList.remove('hidden');
     modal.classList.add('flex');
 }
+
 
 function closeModal(id) {
     const modal = document.getElementById(id);

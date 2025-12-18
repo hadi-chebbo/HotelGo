@@ -1,6 +1,7 @@
 <?php
     use App\Http\Controllers\HotelController;
     use App\Http\Middleware\SystemAdminMiddleware;
+    use Illuminate\Support\Facades\Route;
 
     Route::prefix('admin')->controller(HotelController::class)->group(function () {
             Route::prefix('hotels')->group(function() {
@@ -12,3 +13,5 @@
             });
         });
     });
+
+?>
