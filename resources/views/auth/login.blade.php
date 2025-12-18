@@ -1,4 +1,10 @@
+   @if ($errors->any())
+    <div class="alert alert-danger bg-red-600 text-center">
+        {{ $errors->first() }}
+    </div>
+@endif
 <x-guest-layout>
+
     @slot('title')
         Your Stay Awaits!
     @endslot
@@ -8,7 +14,8 @@
     @endslot
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
-    
+
+
     <form method="POST" action="{{ route('login') }}">
         @csrf
 

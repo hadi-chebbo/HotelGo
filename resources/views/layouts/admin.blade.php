@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Admin - @yield('title')</title>
+    <title >System Admin - @yield('title')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -14,7 +14,7 @@
     <aside class="w-64 bg-white/90 backdrop-blur-xl border-r flex flex-col shadow-sm">
         <div class="p-6 border-b">
             <div class="text-2xl font-bold text-gray-800 tracking-tight">
-               <span class="text-blue-600">Admin</span>Panel
+               <span class="text-blue-600">Admin</span><span class="text-blue-900">Panel</span> 
             </div>
         </div>
 
@@ -45,6 +45,19 @@
                     </svg>
 
                     <span class="font-medium">Hotels</span>
+                </a>
+
+            <a href="{{ route('admin.users.index') }}"
+                class="group flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all
+                {{ request()->routeIs('systemAdmin.hotels.*') 
+                    ? 'bg-blue-600 text-white shadow-md' 
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
+
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0zM4.5 21a7.5 7.5 0 0115 0v-1.5a6 6 0 00-12 0V21z" />
+                </svg>
+
+                    <span class="font-medium">Users</span>
                 </a>
         </nav>
     </aside>
