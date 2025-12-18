@@ -14,7 +14,8 @@ class PromoCode extends Model
         'discount_percentage',
         'usage_limit',
         'start_date',
-        'end_date'
+        'end_date',
+        'is_active'
     ];
     public function hotel(){
         return $this->belongsTo(Hotel::class);
