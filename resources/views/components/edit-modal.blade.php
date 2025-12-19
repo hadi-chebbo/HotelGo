@@ -25,12 +25,22 @@
                             id="{{ $id }}_{{ $field['name'] }}" 
                             class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         ></textarea>
+                        @elseif($field['type'] === 'checkbox')
+                    <input
+                        type="checkbox"
+                        name="{{ $field['name'] }}"
+                        id="{{ $id }}_{{ $field['name'] }}"
+                        value="1"
+                        @if(!empty($field['value'])) checked @endif
+                    >
+
                     @else
                         <input 
                             type="{{ $field['type'] }}" 
                             name="{{ $field['name'] }}" 
                             id="{{ $id }}_{{ $field['name'] }}" 
                             class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value="{{ $field['value'] ?? '' }}"
                             @if(isset($field['min'])) min="{{ $field['min'] }}" @endif
                             @if(isset($field['max'])) max="{{ $field['max'] }}" @endif
                             @if(isset($field['step'])) step="{{ $field['step'] }}" @endif
