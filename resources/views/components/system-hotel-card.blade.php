@@ -8,11 +8,12 @@
     </div>
 
     <p class="text-gray-600 mt-1">{{ $hotel->location }}</p>
-
+    <p class="text-gray-600 mt-1">Email: {{ $hotel->email }}</p>
     <!-- Hotel admin info -->
     <div class="mt-2 text-gray-700 text-sm mb-2">
         <p>Admin: {{ $hotel->user->name ?? 'N/A' }}</p>
-        <p>Email: {{ $hotel->user->email ?? 'N/A' }}</p>
+        <p>Admin Email: {{ $hotel->user->email ?? 'N/A' }}</p>
+        <p>Admin Phone: {{ $hotel->user->phone ?? 'N/A' }}</p>
     </div>
 
     <!-- Admin actions -->

@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 use Database\Seeders\UserTableSeeder;
 use Database\Seeders\HotelSeeder;
 use Database\Seeders\RoomSeeder;
+use Database\Seeders\RoomTypeSeeder;
 use Database\Seeders\PromoCodeSeeder;
 use Database\Seeders\ReservationSeeder;
 
@@ -24,6 +25,8 @@ class DatabaseSeeder extends Seeder
         $this->call(UsersTableSeeder::class);
 
         $this->call(HotelSeeder::class);
+
+        $this->call(RoomTypeSeeder::class);
 
         $this->call(RoomSeeder::class);
 

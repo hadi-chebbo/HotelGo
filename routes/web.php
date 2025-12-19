@@ -28,4 +28,5 @@ Route::prefix('hotel')->controller(HotelController::class)->middleware([CheckIfB
 require __DIR__.'/auth.php';
 require __DIR__.'/systemAdmin/hotel.php';
 require __DIR__.'/systemAdmin/user.php';
+require __DIR__.'/hotelAdmin/roomType.php';
 require __DIR__.'/hotelAdmin/promocode.php';

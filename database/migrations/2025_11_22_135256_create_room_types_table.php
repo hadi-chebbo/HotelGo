@@ -11,25 +11,26 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rooms', function (Blueprint $table) {
+        Schema::create('room_types', function (Blueprint $table) {
             $table->id();
             $table->foreignId('hotel_id')->constrained()->onDelete('cascade');
-            $table->foreignId('room_type_id')->constrained()->onDelete('cascade');
-            $table->string('room_number');
-            $table->integer('floor');
-            $table->string('status');
+            $table->string('type');
+            $table->string('description');
+            $table->integer('capacity');
+            $table->decimal('price_per_night');
+            $table->string('image');
             $table->timestamps();
 
-            //room_number unique per hotel
-            $table->unique(['hotel_id', 'room_number']);
+            //type unique per hotel
+            $table->unique(['hotel_id', 'type']);
         });
     }
-
+    
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('rooms');
+        Schema::dropIfExists('room_types');
     }
 };
