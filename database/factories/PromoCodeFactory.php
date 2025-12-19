@@ -23,7 +23,6 @@ class PromoCodeFactory extends Factory
             'hotel_id' => Hotel::inRandomOrder()->first()->id,
             'code' => strtoupper($this->faker->bothify('PROMO###')),
             'discount_percentage' => $this->faker->numberBetween(5, 50),
-            'usage_limit' => $this->faker->numberBetween(2, 5),
             'start_date' => $this->faker->dateTimeBetween('-1 week', 'now'),
             'end_date' => $this->faker->dateTimeBetween('now', '+1 month'),
             'is_active' => $this->faker->boolean(70),

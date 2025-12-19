@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('hotel_id')->constrained()->onDelete('cascade');
             $table->string('code');
             $table->integer('discount_percentage');
-            $table->integer('usage_limit');
             $table->date('start_date');
             $table->date('end_date');
             $table->boolean('is_active')->default(1);

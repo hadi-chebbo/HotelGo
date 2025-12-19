@@ -23,7 +23,7 @@ class HotelController extends Controller
         // 1) Create hotel admin
         $admin = User::create([
             'name' => $validated['name'] . " Admin",
-            'email'=> strtolower($validated['name']) . "@hotel.com",
+            'email'=> strtolower((str_replace(' ', '', $validated['name']))) . "@hotel.com",
             'password' => bcrypt($validated['name'] . "_password"),
             'phone' => $validated['admin_phone'],
             'role' => 2,

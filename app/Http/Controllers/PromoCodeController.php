@@ -11,7 +11,11 @@ class PromoCodeController extends Controller
     // READ ALL
     public function index()
     {
-        $promocodes = PromoCode::latest()->get();
+        $hotelId = Auth::user()->hotel->id;
+        $promocodes = PromoCode::where('hotel_id', $hotelId)
+            ->latest()
+            ->get();
+
         return view('hotelAdmin.promocodes.index', compact('promocodes'));
     }
 
@@ -21,14 +25,13 @@ class PromoCodeController extends Controller
         $data = $request->validate([
             'code' => 'required|string|unique:promo_codes,code',
             'discount_percentage' => 'required|integer|min:1|max:100',
-            'usage_limit' => 'required|integer|min:1',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'is_active' => 'sometimes|boolean'
         ]);
 
         // Default to active if not sent
-        $data['is_active'] = $data['is_active'] ?? 1;
+        $data['is_active'] = $request->has('is_active');
         $data['hotel_id'] = Auth::user()->hotel->id;
         $promoCode = PromoCode::create($data);
 
@@ -42,12 +45,12 @@ class PromoCodeController extends Controller
         $data = $request->validate([
             'code' => 'required|string|unique:promo_codes,code,' . $promoCode->id,
             'discount_percentage' => 'required|integer|min:1|max:100',
-            'usage_limit' => 'required|integer|min:1',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'is_active' => 'sometimes|boolean'
         ]);
 
+        
         $promoCode->update($data);
         
         return redirect()->back()
