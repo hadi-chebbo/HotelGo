@@ -19,10 +19,10 @@ class RoomTypeController extends Controller
 
         $validated =$request->validate([
                 'type' => 'required|string|unique:room_types,type,NULL,id,hotel_id,' . $hotel->id,
-                'description' => 'string|max:255',
+                'description' => 'required|string|max:255',
                 'capacity' => 'required|integer|min:1',
                 'price_per_night' => 'required|numeric|min:0',
-                'image' => 'image|max:2048',
+                'image' => 'required|image|max:2048',
             ]);
         $validated['image'] = $request->file('image')->store('room-types', 'public');
 
