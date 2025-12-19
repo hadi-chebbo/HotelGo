@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\RoomType;
 use Illuminate\Http\Request;
 
 class RoomTypeController extends Controller
@@ -10,31 +11,33 @@ class RoomTypeController extends Controller
     {
         $hotel = auth()->user()->hotel;
         $roomTypes = $hotel->roomTypes;
-        return view('room_types.index', compact('roomTypes')); 
+
+        return view('hotelAdmin.roomTypes.index', compact('roomTypes'));
     }
 
     public function store(Request $request)
     {
         $hotel = auth()->user()->hotel;
 
-        $validated =$request->validate([
-                'type' => 'required|string|unique:room_types,type,NULL,id,hotel_id,' . $hotel->id,
-                'description' => 'required|string|max:255',
-                'capacity' => 'required|integer|min:1',
-                'price_per_night' => 'required|numeric|min:0',
-                'image' => 'required|image|max:2048',
-            ]);
+        $validated = $request->validate([
+            'type' => 'required|string|unique:room_types,type,NULL,id,hotel_id,'.$hotel->id,
+            'description' => 'required|string|max:255',
+            'capacity' => 'required|integer|min:1',
+            'price_per_night' => 'required|numeric|min:0',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
         $validated['image'] = $request->file('image')->store('room-types', 'public');
 
         $roomType = $hotel->roomTypes()->create($validated);
 
-        return redirect()->route('room-types.index')->with('success', 'Room type created successfully!');
+        return redirect()->back()->with('success', 'Room type created successfully!');
     }
 
     public function destroy(RoomType $roomType)
     {
         $roomType->delete();
-        return redirect()->route('room-types.index')->with('success', 'Room type deleted successfully');
+
+        return redirect()->back()->with('success', 'Room type deleted successfully');
     }
 
     public function update(Request $request, RoomType $roomType)
@@ -42,19 +45,28 @@ class RoomTypeController extends Controller
         $hotel = auth()->user()->hotel;
 
         $validated = $request->validate([
-            'type' => 'required|string|unique:room_types,type,' . $roomType->id . ',id,hotel_id,' . $hotel->id,
+            'type' => 'required|string|unique:room_types,type,'.$roomType->id.',id,hotel_id,'.$hotel->id,
             'description' => 'string|max:255',
             'capacity' => 'required|integer|min:1',
             'price_per_night' => 'required|numeric|min:0',
-            'image' => 'image|max:2048',
+            'image' => 'nullable|image|max:2048|mimes:jpeg,png,jpg,gif,webp',
         ]);
+        // Only update image if a new one is uploaded
+        if ($request->hasFile('image')) {
+            // Delete old image
+            if ($roomType->image && Storage::disk('public')->exists($roomType->image)) {
+                Storage::disk('public')->delete($roomType->image);
+            }
 
-        $validated['image'] = $request->file('image')->store('room-types', 'public');
-        
+            // Store new image
+            $validated['image'] = $request->file('image')->store('room-types', 'public');
+        } else {
+            // keep the old image if no new image is uploaded
+            $validated['image'] = $roomType->image;
+        }
 
         $roomType->update($validated);
 
-        return redirect()->route('room-types.index')->with('success', 'Room type updated successfully!');
+        return redirect()->back()->with('success', 'Room type updated successfully!');
     }
-
 }
