@@ -35,8 +35,7 @@ class PromoCodeController extends Controller
 
         
         $data['is_active'] = $request->has('is_active');
-        $data['hotel_id'] = Auth::user()->hotel->id;
-        $promoCode = PromoCode::create($data);
+        $promoCode = $hotel->promoCodes()->create($data);
 
         return redirect()->back()
             ->with('success', 'The promo code "' . $promoCode->code . '" was created successfully.');
