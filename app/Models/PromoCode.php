@@ -12,9 +12,13 @@ class PromoCode extends Model
         'hotel_id',
         'code',
         'discount_percentage',
-        'usage_limit',
         'start_date',
-        'end_date'
+        'end_date',
+        'is_active'
+    ];
+    protected $casts = [
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
     ];
     public function hotel(){
         return $this->belongsTo(Hotel::class);
