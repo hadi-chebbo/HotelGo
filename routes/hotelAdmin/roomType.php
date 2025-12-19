@@ -3,7 +3,7 @@
     use App\Http\Middleware\HotelAdminMiddleware;
     use Illuminate\Support\Facades\Route;
 
-    Route::prefix('hotelAdmin')->controller(RoomTypeController::class)->group(function () {
+    Route::prefix('hotelAdmin/roomTypes')->controller(RoomTypeController::class)->group(function () {
         Route::middleware([HotelAdminMiddleware::class])->group(function () {
             Route::get('/', 'index')->name('hotelAdmin.room_types.index');
             Route::post('/create', 'store')->name('hotelAdmin.room_types.store');
