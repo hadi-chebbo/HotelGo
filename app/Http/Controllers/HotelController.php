@@ -41,9 +41,7 @@ class HotelController extends Controller
         // 4) Create hotel linked to the admin user
         $hotel = $admin->hotel()->create($validated);
 
-        return response()->json([
-            'message' => 'Hotel and hotel admin created successfully',
-        ]);
+        return redirect()->back()->with('success', 'Hotel created successfully');
     }
 
     public function update(Request $request, Hotel $hotel)

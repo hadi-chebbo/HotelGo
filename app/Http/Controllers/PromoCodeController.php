@@ -20,18 +20,23 @@ class PromoCodeController extends Controller
     public function store(Request $request)
     {
         $hotel = Auth::user()->hotel;
-        if ($hotel->promoCodes()->where('code', $request->code)->exists()) {
-            return redirect()->back()
-                ->withErrors(['code' => 'This promo code already exists for your hotel.'])
-                ->withInput();
+        if ($hotel->promoCodes()
+            ->where('code', $request->code)
+            ->where('id', '!=', $promoCode->id) // exclude the one being updated
+            ->exists()) {
+        return redirect()->back()
+            ->withErrors(['code' => 'This promo code already exists for your hotel.'])
+            ->withInput();
         }
         $data = $request->validate([
             'code' => 'required|string',
             'discount_percentage' => 'required|integer|min:1|max:100',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'is_active' => 'sometimes|boolean'
         ]);
+
+        $data['start_date'] = \Carbon\Carbon::parse($data['start_date'])->format('Y-m-d');
+        $data['end_date'] = \Carbon\Carbon::parse($data['end_date'])->format('Y-m-d');
 
         
         $data['is_active'] = $request->has('is_active');
