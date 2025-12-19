@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PromoCode;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class PromoCodeController extends Controller
@@ -18,7 +19,6 @@ class PromoCodeController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'hotel_id' => 'required|exists:hotels,id',
             'code' => 'required|string|unique:promo_codes,code',
             'discount_percentage' => 'required|integer|min:1|max:100',
             'usage_limit' => 'required|integer|min:1',
@@ -29,7 +29,7 @@ class PromoCodeController extends Controller
 
         // Default to active if not sent
         $data['is_active'] = $data['is_active'] ?? 1;
-
+        $data['hotel_id'] = Auth::user()->hotel->id;
         $promoCode = PromoCode::create($data);
 
         return redirect()->back()
@@ -40,7 +40,6 @@ class PromoCodeController extends Controller
     public function update(Request $request, PromoCode $promoCode)
     {
         $data = $request->validate([
-            'hotel_id' => 'required|exists:hotels,id',
             'code' => 'required|string|unique:promo_codes,code,' . $promoCode->id,
             'discount_percentage' => 'required|integer|min:1|max:100',
             'usage_limit' => 'required|integer|min:1',
@@ -50,7 +49,7 @@ class PromoCodeController extends Controller
         ]);
 
         $promoCode->update($data);
-
+        
         return redirect()->back()
             ->with('success', 'The promo code "' . $promoCode->code . '" was updated successfully.');
     }

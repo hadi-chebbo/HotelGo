@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 use function Pest\Laravel\get;
 
 Route::prefix('hotelAdmin/promocodes')
-    ->middleware([HotelAdminMiddleware::class])
+    ->middleware(['auth',HotelAdminMiddleware::class])
     ->controller(PromoCodeController::class)
     ->group(function () {
         // READ ALL
