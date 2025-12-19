@@ -17,17 +17,17 @@ class RoomFactory extends Factory
      */
     public function definition(): array
     {
-        $types = ['Single', 'Double', 'Twin', 'Suite', 'Deluxe'];
+        
         $statuses = ['available', 'maintenance'];
+        $hotel = Hotel::inRandomOrder()->first();
+        
 
         return [
-            'hotel_id' => Hotel::inRandomOrder()->first()->id, 
-            'type' => $this->faker->randomElement($types),
-            'price_per_night' => $this->faker->numberBetween(50, 500), 
+            'hotel_id' => $hotel->id, 
+            'room_type_id' => $hotel->roomTypes()->inRandomOrder()->first()->id,
+            'room_number' => $this->faker->unique()->numberBetween(100, 999), 
+            'floor' => $this->faker->numberBetween(1, 10), 
             'status' => $this->faker->randomElement($statuses),
-           
-            'created_at' => now(),
-            'updated_at' => now(),
         ];
     }
 }

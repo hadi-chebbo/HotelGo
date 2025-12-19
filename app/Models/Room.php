@@ -10,16 +10,19 @@ class Room extends Model
 
 
     protected $fillable=[
-        'type',
-        'price_per_night',
-        'status',
-        'image',
         'hotel_id',
+        'room_type_id',
+        'room_number',
+        'floor',
+        'status'
     ];
     public function hotel(){
         return $this->belongsTo(Hotel::class);
     }
     public function reviews(){
         return $this->hasMany(Review::class);
+    }
+    public function roomType(){
+        return $this->belongsTo(RoomType::class);
     }
 }
