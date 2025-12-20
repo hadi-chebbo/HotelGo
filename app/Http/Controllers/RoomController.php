@@ -68,7 +68,7 @@ class RoomController extends Controller
         }
     }
 
-    public function destroy(Room $room)
+    public function destroy(RoomType $roomType,Room $room)
     {
         $hotel = auth()->user()->hotel;
         abort_unless($roomType->hotel_id === $hotel->id, 403);
@@ -79,7 +79,7 @@ class RoomController extends Controller
         return redirect()->back()->with('success', 'room number '.$roomNbr.' was deleted successfully');
     }
 
-    public function update(Request $request, Room $room)
+    public function update(Request $request,RoomType $roomType, Room $room)
     {
         $hotel = auth()->user()->hotel;
         abort_unless($room->hotel_id === $hotel->id, 403);
