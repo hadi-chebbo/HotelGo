@@ -10,6 +10,7 @@ use Database\Seeders\RoomSeeder;
 use Database\Seeders\RoomTypeSeeder;
 use Database\Seeders\PromoCodeSeeder;
 use Database\Seeders\ReservationSeeder;
+use Database\Seeders\GuestSeeder;
 
 
 class DatabaseSeeder extends Seeder
@@ -21,6 +22,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(GuestSeeder::class);
 
         $this->call(UsersTableSeeder::class);
 
