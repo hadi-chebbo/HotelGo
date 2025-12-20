@@ -12,7 +12,7 @@ class RoomController extends Controller
 {
     public function index(RoomType $roomType)
     {
-        $hotel = auth()->user()->hotel;
+        $hotel = Auth::user()->hotel;
         abort_unless($roomType->hotel_id === $hotel->id, 403);
 
         $rooms = $roomType->rooms()->get();
@@ -27,7 +27,7 @@ class RoomController extends Controller
             'nbrOfRooms' => 'required|integer|min:1|max:100',
             'startingRoomNbr' => 'required|integer|min:0',
         ]);
-        $hotel = auth()->user()->hotel;
+        $hotel = Auth::user()->hotel;
         abort_unless($roomType->hotel_id === $hotel->id, 403);
 
         
@@ -70,7 +70,7 @@ class RoomController extends Controller
 
     public function destroy(RoomType $roomType,Room $room)
     {
-        $hotel = auth()->user()->hotel;
+        $hotel = Auth::user()->hotel;
         abort_unless($roomType->hotel_id === $hotel->id, 403);
 
         $roomNbr = $room->room_number;
@@ -81,7 +81,7 @@ class RoomController extends Controller
 
     public function update(Request $request,RoomType $roomType, Room $room)
     {
-        $hotel = auth()->user()->hotel;
+        $hotel = Auth::user()->hotel;
         abort_unless($room->hotel_id === $hotel->id, 403);
         $validated = $request->validate([
             'room_number' => [

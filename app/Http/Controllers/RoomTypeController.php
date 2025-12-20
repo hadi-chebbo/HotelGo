@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\RoomType;
 use Illuminate\Http\Request;
+use Illuminate\Facade\Storage;
+use Illuminate\Support\Facade\Auth;
 
 class RoomTypeController extends Controller
 {
     public function index()
     {
-        $hotel = auth()->user()->hotel;
+        $hotel = Auth::user()->hotel;
         $roomTypes = $hotel->roomTypes;
 
         return view('hotelAdmin.roomTypes.index', compact('roomTypes'));
@@ -17,7 +19,7 @@ class RoomTypeController extends Controller
 
     public function store(Request $request)
     {
-        $hotel = auth()->user()->hotel;
+        $hotel = Auth::user()->hotel;
 
         $validated = $request->validate([
             'type' => 'required|string|unique:room_types,type,NULL,id,hotel_id,'.$hotel->id,
@@ -42,7 +44,7 @@ class RoomTypeController extends Controller
 
     public function update(Request $request, RoomType $roomType)
     {
-        $hotel = auth()->user()->hotel;
+        $hotel = Auth::user()->hotel;
 
         $validated = $request->validate([
             'type' => 'required|string|unique:room_types,type,'.$roomType->id.',id,hotel_id,'.$hotel->id,
