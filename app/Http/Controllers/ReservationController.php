@@ -8,6 +8,7 @@ use App\Models\Room;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ReservationController extends Controller
 {
@@ -29,60 +30,103 @@ class ReservationController extends Controller
         $reservation->delete();
 
         return redirect()->back()->with('success', 'reservation from '.$check_in_date.' to '.$check_out_date.' for the room '.$room_number.' deleted successfully');
-
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required',
-            'email' => 'required',
-            'phone' => 'required',
-            'room_number' => 'required',
-            'check_in_date' => 'required',
-            'check_out_date' => 'required',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|min:8|max:20',
+            'room_number' => 'required|integer',
+            'check_in_date' => 'required|date|after_or_equal:today',
+            'check_out_date' => 'required|date|after:check_in_date',
             'payment_method' => 'required',
         ]);
-        // guest creation
-        $guest = Guest::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'phone' => $validated['phone'],
-        ]);
-        // hotel for this hotel admin
-        $hotel = Auth::user()->hotel;
 
-        // room from the room_number in this hotel
-        $room = Room::where('room_number', $validated['room_number'])
-            ->where('hotel_id', $hotel->id)
-            ->firstOrFail();
-        $roomType = $room->roomType;
-        // calculating number of days
-        $checkIn = Carbon::parse($validated['check_in_date']);
-        $checkOut = Carbon::parse($validated['check_out_date']);
+        try {
+            DB::beginTransaction();
 
-        $nbrofdays = $checkIn->diffInDays($checkOut);
-        $price = $roomType->price_per_night;
-        // creation of a reservation
-        $reservation = $guest->reservations()->create([
-            'user_id' => Auth::id(),
-            'room_id' => $room->id,
-            'hotel_id' => $hotel->id,
-            'check_in_date' => $validated['check_in_date'],
-            'check_out_date' => $validated['check_out_date'],
-            'total_price' => $price * $nbrofdays,
-        ]);
+            // Guest creation
+            $guest = Guest::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'],
+            ]);
 
-        $deposit = $price * $nbrofdays * 0.25;
+            // Hotel for this hotel admin
+            $hotel = Auth::user()->hotel;
 
-        $payment = $reservation->payments()->create([
-            'amount' => $deposit,
-            'method' => $validated['payment_method'],
-            'status' => 'Confirmed',
-            'transaction_date' => now(),
-        ]);
+            // Room from the room_number in this hotel
+            $room = Room::where('room_number', $validated['room_number'])
+                ->where('hotel_id', $hotel->id)
+                ->firstOrFail();
 
-        return redirect()->back()->with('success', 'reservation from '.$validated['check_in_date'].' to '.$validated['check_out_date'].' for the room '.$validated['room_number'].' created successfully');
+            if ($room->status !== 'available') {
+                DB::rollBack();
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['room_number' => 'Room '.$validated['room_number'].' is not available. Current status: '.$room->status]);
+            }
+
+            // Check for date conflicts with existing reservations
+            $hasConflict = Reservation::where('room_id', $room->id)
+                ->where(function ($query) use ($validated) {
+                    $query->whereBetween('check_in_date', [$validated['check_in_date'], $validated['check_out_date']])
+                        ->orWhereBetween('check_out_date', [$validated['check_in_date'], $validated['check_out_date']])
+                        ->orWhere(function ($q) use ($validated) {
+                            $q->where('check_in_date', '<=', $validated['check_in_date'])
+                                ->where('check_out_date', '>=', $validated['check_out_date']);
+                        });
+                })
+                ->whereNotIn('status', ['cancelled', 'checked_out'])
+                ->exists();
+
+            if ($hasConflict) {
+                DB::rollBack();
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['check_in_date' => 'Room '.$validated['room_number'].' is already booked for the selected dates.']);
+            }
+
+            $roomType = $room->roomType;
+
+            // Calculating number of days
+            $checkIn = Carbon::parse($validated['check_in_date']);
+            $checkOut = Carbon::parse($validated['check_out_date']);
+            $nbrofdays = $checkIn->diffInDays($checkOut);
+            $price = $roomType->price_per_night;
+
+            // Creation of a reservation
+            $reservation = $guest->reservations()->create([
+                'user_id' => Auth::id(),
+                'room_id' => $room->id,
+                'hotel_id' => $hotel->id,
+                'check_in_date' => $validated['check_in_date'],
+                'check_out_date' => $validated['check_out_date'],
+                'total_price' => $price * $nbrofdays,
+            ]);
+
+            $deposit = $price * $nbrofdays * 0.25;
+
+            // Create payment
+            $payment = $reservation->payments()->create([
+                'amount' => $deposit,
+                'method' => $validated['payment_method'],
+                'status' => 'Confirmed',
+                'transaction_date' => now(),
+            ]);
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'reservation from '.$validated['check_in_date'].' to '.$validated['check_out_date'].' for the room '.$validated['room_number'].' created successfully');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Failed to create reservation: ' . $e->getMessage()]);
+        }
     }
 
     public function update(Request $request, Reservation $reservation)
@@ -97,45 +141,98 @@ class ReservationController extends Controller
             'payment_method' => 'required',
         ]);
 
-        // Get the hotel for this hotel admin
-        $hotel = Auth::user()->hotel;
+        try {
+            DB::beginTransaction();
 
-        // Find the room from the room_number in this hotel
-        $room = Room::where('room_number', $validated['room_number'])
-            ->where('hotel_id', $hotel->id)
-            ->firstOrFail();
+            // Get the hotel for this hotel admin
+            $hotel = Auth::user()->hotel;
 
-        $roomType = $room->roomType;
+            // Find the room from the room_number in this hotel
+            $room = Room::where('room_number', $validated['room_number'])
+                ->where('hotel_id', $hotel->id)
+                ->firstOrFail();
 
-        // Calculate number of days
-        $checkIn = Carbon::parse($validated['check_in_date']);
-        $checkOut = Carbon::parse($validated['check_out_date']);
-        $nbrofdays = $checkIn->diffInDays($checkOut);
-        $price = $roomType->price_per_night;
+            // Check if room is available (only if changing to a different room)
+            if ($room->id !== $reservation->room_id && $room->status !== 'available') {
+                DB::rollBack();
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['room_number' => 'Room '.$validated['room_number'].' is not available. Current status: '.$room->status]);
+            }
 
-        // Update guest information
-        $reservation->guest->update([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'phone' => $validated['phone'],
-        ]);
+            // Check for date conflicts with existing reservations (excluding current reservation)
+            $hasConflict = Reservation::where('room_id', $room->id)
+                ->where('id', '!=', $reservation->id)
+                ->where(function ($query) use ($validated) {
+                    $query->whereBetween('check_in_date', [$validated['check_in_date'], $validated['check_out_date']])
+                        ->orWhereBetween('check_out_date', [$validated['check_in_date'], $validated['check_out_date']])
+                        ->orWhere(function ($q) use ($validated) {
+                            $q->where('check_in_date', '<=', $validated['check_in_date'])
+                                ->where('check_out_date', '>=', $validated['check_out_date']);
+                        });
+                })
+                ->whereNotIn('status', ['cancelled', 'checked_out'])
+                ->exists();
 
-        // Update reservation
-        $reservation->update([
-            'room_id' => $room->id,
-            'check_in_date' => $validated['check_in_date'],
-            'check_out_date' => $validated['check_out_date'],
-            'total_price' => $price * $nbrofdays,
-        ]);
+            if ($hasConflict) {
+                DB::rollBack();
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['check_in_date' => 'Room '.$validated['room_number'].' is already booked for the selected dates.']);
+            }
 
-        // Update payment (deposit)
-        $deposit = $price * $nbrofdays * 0.25;
+            $roomType = $room->roomType;
 
-        $reservation->payments()->latest()->first()->update([
-            'amount' => $deposit,
-            'method' => $validated['payment_method'],
-        ]);
+            // Calculate number of days
+            $checkIn = Carbon::parse($validated['check_in_date']);
+            $checkOut = Carbon::parse($validated['check_out_date']);
+            $nbrofdays = $checkIn->diffInDays($checkOut);
+            $price = $roomType->price_per_night;
 
-        return redirect()->back()->with('success', 'Reservation updated successfully for room '.$room->room_number);
+            // Update guest information
+            $reservation->guest->update([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'],
+            ]);
+
+            // Update reservation
+            $reservation->update([
+                'room_id' => $room->id,
+                'check_in_date' => $validated['check_in_date'],
+                'check_out_date' => $validated['check_out_date'],
+                'total_price' => $price * $nbrofdays,
+            ]);
+
+            // Update payment (deposit)
+            $deposit = $price * $nbrofdays * 0.25;
+
+            $payment = $reservation->payments()->latest()->first();
+
+            if ($payment) {
+                $payment->update([
+                    'amount' => $deposit,
+                    'method' => $validated['payment_method'],
+                ]);
+            } else {
+                // Create a new payment if none exists
+                $reservation->payments()->create([
+                    'amount' => $deposit,
+                    'method' => $validated['payment_method'],
+                    'status' => 'Confirmed',
+                    'transaction_date' => now(),
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Reservation updated successfully for room '.$room->room_number);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Failed to update reservation: ' . $e->getMessage()]);
+        }
     }
 }
