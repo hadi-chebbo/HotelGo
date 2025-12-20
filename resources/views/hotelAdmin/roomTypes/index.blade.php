@@ -33,7 +33,8 @@
     @endif
 
     <!-- Image Preview Modal -->
-    <div id="imagePreviewModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4"
+    <div id="imagePreviewModal"
+        class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4"
         onclick="closeImagePreview()">
         <div class="relative max-w-4xl max-h-full">
             <img id="previewImage" src="" alt="" class="max-w-full max-h-screen rounded-lg shadow-2xl">
@@ -70,10 +71,13 @@
                     @foreach($roomTypes as $roomType)
                     <tr class="border-b hover:bg-gray-50 transition">
                         <td class="py-3 px-4 text-center font-medium">
-                            {{ $roomType->type }}
+                            <a href="{{ route('hotelAdmin.room.index', $roomType->id) }}"
+                                class=" hover:text-blue-800 hover:underline transition">
+                                {{ $roomType->type }}
+                            </a>
                         </td>
 
-                        <td class="py-3 px-4 text-center text-gray-600">
+                        <td class="py-3 px-4 text-center">
                             {{ $roomType->description }}
                         </td>
 
