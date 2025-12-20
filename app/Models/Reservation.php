@@ -12,6 +12,7 @@ class Reservation extends Model
         'user_id',
         'room_id',
         'hotel_id',
+        'guest_id',
         'promo_code_id',
         'check_in_date',
         'check_out_date',
@@ -24,7 +25,7 @@ class Reservation extends Model
     public function promocode(){
         return $this->hasOne(PromoCode::class);
     }
-    public function payment(){
+    public function payments(){
         return $this->hasMany(Payment::class);
     }
     public function hotel()
@@ -33,5 +34,8 @@ class Reservation extends Model
     }
     public function guest(){
         return $this->belongsTo(Guest::class);
+    }
+    public function room(){
+        return $this->belongsTo(Room::class);
     }
 }
