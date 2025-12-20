@@ -37,6 +37,7 @@
             id="deleteHotelModal-{{ $hotel->id }}" 
             route="{{ route('admin.hotel.delete', $hotel->id) }}" 
             title="Delete Hotel"
+            method="DELETE"
             message="Are you sure you want to delete {{ $hotel->name }}?"
         />
 
