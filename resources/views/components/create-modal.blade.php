@@ -24,6 +24,20 @@
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
 
+                @elseif($field['type'] === 'select')
+                <select name="{{ $field['name'] }}" id="{{ $id }}_{{ $field['name'] }}"
+                    class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    @if(isset($field['placeholder']))
+                    <option value="">{{ $field['placeholder'] }}</option>
+                    @endif
+                    @foreach($field['options'] as $value => $label)
+                    <option value="{{ $value }}">{{ $label }}</option>
+                    @endforeach
+                </select>
+                @error($field['name'])
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+
                 @elseif($field['type'] === 'checkbox')
                 <input type="checkbox" name="{{ $field['name'] }}" id="{{ $id }}_{{ $field['name'] }}" value="1"
                     class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
@@ -34,8 +48,9 @@
                 @else
                 <input type="{{ $field['type'] }}" name="{{ $field['name'] }}" id="{{ $id }}_{{ $field['name'] }}"
                     class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    @if(isset($field['min'])) min="{{ $field['min'] }}" @endif @if(isset($field['max']))
-                    max="{{ $field['max'] }}" @endif @if(isset($field['step'])) step="{{ $field['step'] }}" @endif>
+                    @if(isset($field['min'])) min="{{ $field['min'] }}" @endif 
+                    @if(isset($field['max'])) max="{{ $field['max'] }}" @endif 
+                    @if(isset($field['step'])) step="{{ $field['step'] }}" @endif>
                 @error($field['name'])
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
