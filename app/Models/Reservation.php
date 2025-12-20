@@ -11,6 +11,7 @@ class Reservation extends Model
     protected $fillable = [
         'user_id',
         'room_id',
+        'hotel_id',
         'promo_code_id',
         'check_in_date',
         'check_out_date',
@@ -26,5 +27,11 @@ class Reservation extends Model
     public function payment(){
         return $this->hasMany(Payment::class);
     }
-
+    public function hotel()
+    {
+        return $this->belongsTo(Hotel::class);
+    }
+    public function guest(){
+        return $this->belongsTo(Guest::class);
+    }
 }

@@ -39,6 +39,7 @@ class ReservationFactory extends Factory
         return [
             'user_id' => User::inRandomOrder()->first()->id,
             'room_id' => $room->id,
+            'hotel_id' => $hotelId,
             'promo_code_id' => $promoCodeId,
             'check_in_date' => $this->faker->dateTimeBetween('+1 week', '+3 week')->format('Y-m-d'),
             'check_out_date' => $this->faker->dateTimeBetween('+3 week', '+5 week')->format('Y-m-d'),
