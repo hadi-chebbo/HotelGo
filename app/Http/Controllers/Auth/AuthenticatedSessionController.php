@@ -33,7 +33,7 @@ class AuthenticatedSessionController extends Controller
             return redirect()->intended(route('admin.hotel.index'));
         }
         if($user->role === 2){
-            return redirect()->intended(route('hotelAdmin.roomTypes.index'));
+            return redirect()->intended(route('hotelAdmin.room_types.index'));
         }
 
         if ($user->role == 0 && $user->blocked) {
