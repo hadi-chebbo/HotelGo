@@ -4,7 +4,7 @@
     use Illuminate\Support\Facades\Route;
 
     Route::prefix('hotelAdmin/roomTypes/{roomType}/rooms')
-    ->middleware(HotelAdminMiddleware::class)
+    ->middleware(['auth',HotelAdminMiddleware::class])
     ->controller(RoomController::class)
     ->group(function () {
         Route::get('/', 'index')->name('hotelAdmin.room.index');
