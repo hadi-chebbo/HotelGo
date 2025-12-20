@@ -1,6 +1,6 @@
 <?php
 
-
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HotelController;
@@ -23,6 +23,8 @@ Route::prefix('hotel')->controller(HotelController::class)->middleware([CheckIfB
     Route::get('/index' , 'index');
     Route::get('/{hotel}/show', 'show');
 });
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
 
 
 require __DIR__.'/auth.php';
