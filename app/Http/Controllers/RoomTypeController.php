@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\RoomType;
 use Illuminate\Http\Request;
 use Illuminate\Facade\Storage;
-use Illuminate\Support\Facade\Auth;
+use Illuminate\Support\Facades\Auth;
 
 class RoomTypeController extends Controller
 {

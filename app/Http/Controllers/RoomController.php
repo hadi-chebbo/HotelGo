@@ -7,6 +7,7 @@ use App\Models\RoomType;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class RoomController extends Controller
 {
