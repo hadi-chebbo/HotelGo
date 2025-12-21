@@ -19,9 +19,6 @@ class Room extends Model
     public function hotel(){
         return $this->belongsTo(Hotel::class);
     }
-    public function reviews(){
-        return $this->hasMany(Review::class);
-    }
     public function roomType(){
         return $this->belongsTo(RoomType::class);
     }
