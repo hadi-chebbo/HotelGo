@@ -23,7 +23,7 @@ Route::prefix('hotel')->controller(HotelController::class)->middleware([CheckIfB
     Route::get('/index' , 'index');
     Route::get('/{hotel}/show', 'show');
 });
-Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/', [HomeController::class, 'topRatedHotels'])->name('home');
 
 
 

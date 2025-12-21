@@ -8,9 +8,9 @@
 <body>
 
     <!-- Navbar -->
-<nav style="background-color:#0a1f44; color:white; padding:15px 20px; display:flex; justify-content:space-between; align-items:center;">
+<nav style="background-color:#1a2a5b; color:white; padding:15px 20px; display:flex; justify-content:space-between; align-items:center;">
     {{-- Hotel Name --}}
-    <div style="font-size:22px; font-weight:bold;">HotelGo</div>
+    <div style="font-size:22px; font-weight:bold;"><span class="text-blue-900">Hotel</span><span class="text-blue-500">Go</span></div>
 
     {{-- Hamburger Icon --}}
     <div onclick="openMenu()" style="font-size:24px; cursor:pointer;">☰</div>
@@ -44,9 +44,13 @@
         <li><a href="/reservations" style="display:block; padding:12px 20px; color:white; text-decoration:none;">Past Reservations</a></li>
     </ul>
 </div>
-
-
-
+<!-- Hero Image Section -->
+<section style="width: 100%; height: 500px; background: url('/images/image.png') no-repeat center center; background-size: cover; display: flex; align-items: center; justify-content: center; color: white;">
+    <div style="background-color: rgba(227, 218, 218, 0.4); padding: 40px 40px; border-radius: 10px; text-align: center;">
+        <h1 style="font-size: 48px; margin-bottom: 10px;">Welcome to HotelGo</h1>
+        <p style="font-size: 18px;">Don’t wait — your perfect stay is waiting for you!</p>
+    </div>
+</section>
 
     {{-- Page Content --}}
     <main class="min-h-screen">
@@ -54,44 +58,45 @@
     </main>
 
     {{-- Footer --}}
-    <footer style="background-color:#0a1f44; color:white; padding:40px 20px; text-align:center;">
-    <div style="max-width: 1200px; margin: auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 20px;">
-        
+<footer style="background-color:#0a1f44; color:white; padding:50px 20px; text-align:left;">
+    <div style="max-width: 1200px; margin: auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 40px;">
+
         {{-- About Section --}}
-        <div style="flex: 1; min-width: 200px;">
-            <h3 style="margin-bottom: 10px;">About HotelGo</h3>
-            <p style="font-size: 14px;">
-                HotelGo helps guests book rooms easily and securely while helping hotels manage reservations efficiently.
+        <div style="flex: 1; min-width: 220px;">
+            <h3 style="margin-bottom: 15px; font-size:22px; font-weight:bold;">About HotelGo</h3>
+            <p style="font-size: 15px; line-height:1.8;">
+                HotelGo helps guests book rooms easily and securely while assisting hotels in managing reservations efficiently. Experience comfort, convenience, and exceptional service with us.
             </p>
         </div>
 
-        {{-- Quick Links --}}
-        <div style="flex: 1; min-width: 150px;">
-            <h4 style="margin-bottom: 10px;">Quick Links</h4>
-            <ul style="list-style: none; padding: 0; font-size: 14px;">
-                <li><a href="/" style="color: white; text-decoration: none;">Home</a></li>
-                <li><a href="/rooms" style="color: white; text-decoration: none;">Rooms</a></li>
-                <li><a href="/contact" style="color: white; text-decoration: none;">Contact</a></li>
-            </ul>
+        {{-- Location & Contact --}}
+        <div style="flex: 1; min-width: 200px;">
+            <h4 style="margin-bottom: 15px; font-size:20px; font-weight:bold;">Our Location</h4>
+            <p style="font-size: 15px; line-height:1.8;">
+                📍 Lebanon, Beirut<br>
+                📞 +961 70 123 456<br>
+                ✉️ <a href="mailto:info@hotelgo.com" style="color:white; text-decoration:underline;">info@hotelgo.com</a>
+            </p>
         </div>
 
         {{-- Social Media --}}
-        <div style="flex: 1; min-width: 150px;">
-            <h4 style="margin-bottom: 10px;">Follow Us</h4>
-            <p style="font-size: 14px;">
-                <a href="#" style="color:white; margin-right:10px;">Facebook</a>
-                <a href="#" style="color:white; margin-right:10px;">Twitter</a>
-                <a href="#" style="color:white;">Instagram</a>
+        <div style="flex: 1; min-width: 180px;">
+            <h4 style="margin-bottom: 15px; font-size:20px; font-weight:bold;">Follow Us</h4>
+            <p style="font-size: 15px; line-height:1.8;">
+                <a href="#" style="color:white; margin-right:15px; text-decoration:none;">Facebook</a>
+                <a href="#" style="color:white; margin-right:15px; text-decoration:none;">Twitter</a>
+                <a href="#" style="color:white; text-decoration:none;">Instagram</a>
             </p>
         </div>
 
     </div>
 
     {{-- Bottom Copyright --}}
-    <div style="margin-top: 30px; border-top: 1px solid #07152f; padding-top: 15px; font-size: 13px;">
+    <div style="margin-top: 50px; border-top: 1px solid #07152f; padding-top: 20px; font-size: 14px; text-align:center;">
         © {{ date('Y') }} HotelGo. All rights reserved.
     </div>
 </footer>
+
 
 
 </body>
