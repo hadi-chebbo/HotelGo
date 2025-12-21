@@ -4,211 +4,411 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title >System Admin - @yield('title')</title>
+    <title>System Admin - @yield('title')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+        }
+    </style>
 </head>
-<div class="w-[95%] max-w-[1200px] mx-auto py-10">
-    
-    <!-- Hotel Header Section -->
-    <div class="mb-10">
-        <!-- Hotel Image -->
-        @if($hotel->image)
-        <div class="w-full h-[400px] rounded-[20px] shadow-[0_10px_30px_rgba(0,0,0,0.2)] mb-8 overflow-hidden">
-            <img src="{{ asset('storage/' . $hotel->image) }}" 
-                 alt="{{ $hotel->name }}"
-                 class="w-full h-full object-cover">
-        </div>
-        @else
-        <div class="w-full h-[400px] rounded-[20px] shadow-[0_10px_30px_rgba(0,0,0,0.2)] mb-8 bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
-            <svg class="w-24 h-24 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-            </svg>
-        </div>
-        @endif
 
-        <!-- Hotel Info -->
-        <div class="flex justify-between items-start flex-wrap gap-5">
-            <div class="flex-1 min-w-[300px]">
-                <h1 class="text-[42px] mb-4 text-blue-900 font-bold">
-                    {{ $hotel->name }}
-                </h1>
-                <p class="text-lg text-gray-600 mb-2.5">
-                    📍 <b>{{ $hotel->location }}</b>
-                </p>
-                @if(isset($hotel->description))
-                <p class="text-base text-gray-600 leading-relaxed mb-5">
-                    {{ $hotel->description }}
-                </p>
-                @endif
-                
-                <!-- Rating Display -->
-                <div class="inline-block bg-blue-900 text-white px-5 py-2.5 rounded-[25px] text-lg font-semibold">
-                    ⭐ {{ number_format($hotel->rating ?? 0, 1) }} / 5.0
-                </div>
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Hero Section with Hotel Image -->
+        <div class="relative mb-12 rounded-3xl overflow-hidden shadow-2xl">
+            @if($hotel->image)
+            <div class="relative h-[500px] w-full">
+                <img src="{{ asset('storage/' . $hotel->image) }}" alt="{{ $hotel->name }}"
+                    class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
             </div>
-
-            <!-- Contact Info -->
-            @if(isset($hotel->user->phone) || isset($hotel->email))
-            <div class="bg-gray-50 p-6 rounded-2xl min-w-[280px] shadow-md">
-                <h3 class="mb-4 text-blue-900 text-xl font-bold">Contact Information</h3>
-                @if(isset($hotel->user->phone))
-                <p class="mb-2.5 text-[15px]">
-                    📞 <b>Phone:</b> {{ $hotel->user->phone }}
-                </p>
-                @endif
-                @if(isset($hotel->email))
-                <p class="mb-0 text-[15px]">
-                    ✉️ <b>Email:</b> {{ $hotel->email }}
-                </p>
-                @endif
+            @else
+            <div
+                class="relative h-[500px] bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 flex items-center justify-center">
+                <svg class="w-32 h-32 text-white opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                    </path>
+                </svg>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
             </div>
             @endif
-        </div>
-    </div>
 
-    <!-- Available Rooms Section -->
-    <section class="mb-12">
-        <h2 class="text-[32px] mb-6 text-blue-900 font-bold">
-            Available Rooms
-        </h2>
-
-        @if($roomTypes->count() > 0)
-        <div class="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6">
-            @foreach($roomTypes as $roomType)
-            <div class="bg-white rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
-                
-                <!-- Room Image -->
-                <div class="relative">
-                    @if($roomType->image)
-                    <img src="{{ asset('storage/' . $roomType->image) }}" 
-                         alt="{{ $roomType->type }}"
-                         class="w-full h-[220px] object-cover">
-                    @else
-                    <div class="w-full h-[220px] bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
-                        <svg class="w-16 h-16 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                        </svg>
+            <!-- Hotel Info Overlay -->
+            <div class="absolute bottom-0 left-0 right-0 p-8 text-white">
+                <div class="max-w-4xl">
+                    <h1 class="text-5xl font-bold mb-4 drop-shadow-lg">
+                        {{ $hotel->name }}
+                    </h1>
+                    <div class="flex items-center gap-6 flex-wrap mb-4">
+                        <div class="flex items-center gap-2 text-lg">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="font-medium">{{ $hotel->location }}</span>
+                        </div>
+                        <div class="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+                            <svg class="w-5 h-5 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                                </path>
+                            </svg>
+                            <span class="font-bold text-lg">{{ number_format($hotel->reviews()->avg('rating') ?? 0, 1)
+                                }}</span>
+                        </div>
                     </div>
-                    @endif
-                    
-                    <!-- Available Rooms Badge -->
-                    <span class="absolute top-3 right-3 bg-green-500/95 text-white px-3.5 py-2 rounded-[20px] text-sm font-semibold">
-                        {{ $roomType->available_rooms_count }} Available
-                    </span>
-                </div>
-
-                <!-- Room Details -->
-                <div class="p-5">
-                    <h3 class="text-[22px] mb-2.5 text-blue-900 font-bold">
-                        {{ ucfirst($roomType->type) }}
-                    </h3>
-                    
-                    @if(isset($roomType->description))
-                    <p class="text-sm text-gray-600 mb-4 leading-relaxed">
-                        {{ $roomType->description }}
+                    @if(isset($hotel->description))
+                    <p class="text-lg text-white/90 leading-relaxed max-w-3xl">
+                        {{ $hotel->description }}
                     </p>
                     @endif
-
-                    <!-- Features -->
-                    @if(isset($roomType->capacity) || isset($roomType->amenities))
-                    <div class="mb-4">
-                        @if(isset($roomType->capacity))
-                        <p class="text-sm text-gray-700 mb-1">
-                            👥 <b>Capacity:</b> {{ $roomType->capacity }} guests
-                        </p>
-                        @endif
-                        @if(isset($roomType->amenities))
-                        <p class="text-sm text-gray-700">
-                            ✨ <b>Amenities:</b> {{ $roomType->amenities }}
-                        </p>
-                        @endif
-                    </div>
-                    @endif
-
-                    <!-- Price and Button -->
-                    <div class="flex justify-between items-center border-t border-gray-200 pt-4">
-                        <div>
-                            <p class="text-[26px] text-green-500 font-bold m-0">
-                                ${{ number_format($roomType->price_per_night, 0) }}
-                            </p>
-                            <p class="text-[13px] text-gray-500 m-0">per night</p>
-                        </div>
-                        <a href="/rooms/{{ $roomType->id }}" 
-                           class="inline-block px-6 py-3 bg-blue-900 text-white no-underline rounded-xl font-semibold transition-colors hover:bg-blue-800">
-                            View Details
-                        </a>
-                    </div>
                 </div>
             </div>
-            @endforeach
         </div>
-        @else
-        <div class="bg-red-50 border-2 border-dashed border-red-500 rounded-2xl p-10 text-center">
-            <p class="text-lg text-red-900 m-0">
-                🏨 No rooms are currently available at this hotel. Please check back later!
-            </p>
-        </div>
-        @endif
-    </section>
 
-    <!-- Reviews Section -->
-    <section class="mb-10">
-        <h2 class="text-[32px] mb-6 text-blue-900 font-bold">
-            Guest Reviews <span class="text-2xl text-gray-600">({{ $reviews->count() }})</span>
-        </h2>
-
-        @if($reviews->count() > 0)
-        <div class="flex flex-col gap-5">
-            @foreach($reviews as $review)
-            <div class="bg-white p-6 rounded-2xl shadow-md">
-                <!-- Review Header -->
-                <div class="flex justify-between items-center mb-4 flex-wrap gap-2.5">
+        <!-- Contact Card -->
+        @if(isset($hotel->user->phone) || isset($hotel->email))
+        <div class="glass-effect rounded-2xl p-6 shadow-lg mb-12 border border-white/20">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                    </path>
+                </svg>
+                Contact Information
+            </h3>
+            <div class="grid md:grid-cols-2 gap-4">
+                @if(isset($hotel->user->phone))
+                <a href="tel:{{ $hotel->user->phone }}"
+                    class="flex items-center gap-3 p-4 bg-white rounded-xl hover:shadow-md transition-all group">
+                    <div class="bg-blue-100 p-3 rounded-full group-hover:bg-blue-200 transition-colors">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z">
+                            </path>
+                        </svg>
+                    </div>
                     <div>
-                        <h4 class="text-lg text-blue-900 mb-1 font-bold">
-                            {{ $review->user->name ?? 'Anonymous Guest' }}
-                        </h4>
-                        <p class="text-[13px] text-gray-500 m-0">
-                            {{ $review->created_at->format('F j, Y') }}
-                        </p>
+                        <p class="text-xs text-gray-500 font-medium">Phone</p>
+                        <p class="text-gray-800 font-semibold">{{ $hotel->user->phone }}</p>
                     </div>
-                    
-                    <!-- Star Rating -->
-                    <div class="bg-yellow-100 px-4 py-2 rounded-[20px] text-base font-semibold text-yellow-800">
-                        @for($i = 1; $i <= 5; $i++)
-                            @if($i <= $review->rating)
-                                ⭐
-                            @else
-                                ☆
-                            @endif
-                        @endfor
-                        <span class="ml-1">{{ $review->rating }}/5</span>
+                </a>
+                @endif
+                @if(isset($hotel->email))
+                <a href="mailto:{{ $hotel->email }}"
+                    class="flex items-center gap-3 p-4 bg-white rounded-xl hover:shadow-md transition-all group">
+                    <div class="bg-purple-100 p-3 rounded-full group-hover:bg-purple-200 transition-colors">
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207">
+                            </path>
+                        </svg>
                     </div>
-                </div>
-
-                <!-- Review Comment -->
-                @if(isset($review->comment))
-                <p class="text-[15px] text-gray-700 leading-relaxed m-0">
-                    "{{ $review->comment }}"
-                </p>
+                    <div>
+                        <p class="text-xs text-gray-500 font-medium">Email</p>
+                        <p class="text-gray-800 font-semibold">{{ $hotel->email }}</p>
+                    </div>
+                </a>
                 @endif
             </div>
-            @endforeach
-        </div>
-        @else
-        <div class="bg-gray-50 rounded-2xl p-10 text-center">
-            <p class="text-lg text-gray-600 m-0">
-                💬 No reviews yet. Be the first to review this hotel!
-            </p>
         </div>
         @endif
-    </section>
 
-    <!-- Back Button -->
-    {{-- <div class="text-center mt-10">
-        <a href="{{ route('home') }}" 
-           class="inline-block px-8 py-3.5 bg-gray-100 text-blue-900 no-underline rounded-xl font-semibold transition-colors hover:bg-gray-200">
-            ← Back to Home
-        </a>
-    </div> --}}
+        <!-- Available Rooms Section -->
+        <section class="mb-16">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-4xl font-bold text-gray-800">
+                    Available Rooms
+                </h2>
+                @if($roomTypes->count() > 0)
+                <span class="text-sm font-medium text-gray-500 bg-white px-4 py-2 rounded-full shadow-sm">
+                    {{ $roomTypes->count() }} room types
+                </span>
+                @endif
+            </div>
 
-</div>
+            @if($roomTypes->count() > 0)
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach($roomTypes as $roomType)
+                <div
+                    class="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+
+                    <!-- Room Image -->
+                    <div class="relative overflow-hidden h-56">
+                        @if($roomType->image)
+                        <img src="{{ asset('storage/' . $roomType->image) }}" alt="{{ $roomType->type }}"
+                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        @else
+                        <div
+                            class="w-full h-full bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center">
+                            <svg class="w-20 h-20 text-white opacity-40" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                                </path>
+                            </svg>
+                        </div>
+                        @endif
+
+                        <!-- Available Badge -->
+                        <div
+                            class="absolute top-4 right-4 bg-emerald-500 text-white px-3 py-1.5 rounded-full text-sm font-semibold shadow-lg flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            {{ $roomType->available_rooms_count }} Available
+                        </div>
+                    </div>
+
+                    <!-- Room Details -->
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">
+                            {{ ucfirst($roomType->type) }}
+                        </h3>
+
+                        @if(isset($roomType->description))
+                        <p class="text-sm text-gray-600 mb-4 line-clamp-2">
+                            {{ $roomType->description }}
+                        </p>
+                        @endif
+
+                        <!-- Features -->
+                        <div class="space-y-2 mb-5">
+                            @if(isset($roomType->capacity))
+                            <div class="flex items-center gap-2 text-sm text-gray-700">
+                                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                                    </path>
+                                </svg>
+                                <span><strong>Up to {{ $roomType->capacity }}</strong> guests</span>
+                            </div>
+                            @endif
+                            @if(isset($roomType->amenities))
+                            <div class="flex items-start gap-2 text-sm text-gray-700">
+                                <svg class="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
+                                    </path>
+                                </svg>
+                                <span class="line-clamp-2">{{ $roomType->amenities }}</span>
+                            </div>
+                            @endif
+                        </div>
+
+                        <!-- Price and Button -->
+                        <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+                            <div>
+                                <p class="text-3xl font-bold text-emerald-600">
+                                    ${{ number_format($roomType->price_per_night, 0) }}
+                                </p>
+                                <p class="text-xs text-gray-500">per night</p>
+                            </div>
+                            <a href="/rooms/{{ $roomType->id }}"
+                                class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold transition-all hover:shadow-lg hover:scale-105">
+                                View
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            @else
+            <div
+                class="bg-gradient-to-r from-red-50 to-orange-50 border-2 border-dashed border-red-300 rounded-2xl p-12 text-center">
+                <svg class="w-16 h-16 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                    </path>
+                </svg>
+                <p class="text-xl text-red-900 font-semibold">
+                    No rooms currently available
+                </p>
+                <p class="text-gray-600 mt-2">Please check back later for availability</p>
+            </div>
+            @endif
+        </section>
+
+        <!-- Reviews Section -->
+        <section class="mb-12">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-4xl font-bold text-gray-800">
+                    Guest Reviews
+                </h2>
+                <span class="text-sm font-medium text-gray-500 bg-white px-4 py-2 rounded-full shadow-sm">
+                    {{ $reviews->count() }} reviews
+                </span>
+            </div>
+
+            @if($reviews->count() > 0)
+            <div id="reviews-container" class="space-y-4">
+                @foreach($reviews as $index => $review)
+                <div class="review-item bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition-shadow {{ $index >= 2 ? 'hidden' : '' }}"
+                    data-index="{{ $index }}">
+                    <div class="flex justify-between items-start gap-4 mb-4">
+                        <div class="flex items-center gap-4">
+                            <!-- Avatar -->
+                            <div
+                                class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md">
+                                {{ strtoupper(substr($review->user->name ?? 'A', 0, 1)) }}
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-gray-800">
+                                    {{ $review->user->name ?? 'Anonymous Guest' }}
+                                </h4>
+                                <p class="text-sm text-gray-500 flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                    {{ $review->created_at->format('M j, Y') }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Star Rating -->
+                        <div
+                            class="bg-gradient-to-r from-yellow-100 to-orange-100 px-4 py-2 rounded-xl flex items-center gap-1 shadow-sm">
+                            @for($i = 1; $i <= 5; $i++) @if($i <=$review->rating)
+                                <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                                    </path>
+                                </svg>
+                                @else
+                                <svg class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                                    </path>
+                                </svg>
+                                @endif
+                                @endfor
+                                <span class="ml-1 font-bold text-gray-700">{{ $review->rating }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Review Comment -->
+                    @if(isset($review->comment))
+                    <p class="text-gray-700 leading-relaxed pl-16">
+                        "{{ $review->comment }}"
+                    </p>
+                    @endif
+                </div>
+                @endforeach
+            </div>
+
+            @if($reviews->count() > 2)
+            <div class="text-center mt-8">
+                <button id="load-more-btn"
+                    class="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                    <span>Load More Reviews</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <button id="show-less-btn"
+                    class="hidden inline-flex items-center gap-2 px-8 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                    <span>Show Less</span>
+                    <svg class="w-5 h-5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+            </div>
+            @endif
+            @else
+            <div class="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-12 text-center">
+                <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+                    </path>
+                </svg>
+                <p class="text-xl text-gray-600 font-semibold">
+                    No reviews yet
+                </p>
+                <p class="text-gray-500 mt-2">Be the first to share your experience!</p>
+            </div>
+            @endif
+        </section>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadMoreBtn = document.getElementById('load-more-btn');
+            const showLessBtn = document.getElementById('show-less-btn');
+            const reviews = document.querySelectorAll('.review-item');
+            let currentlyShowing = 2;
+
+            if (loadMoreBtn) {
+                loadMoreBtn.addEventListener('click', function() {
+                    const toShow = Math.min(currentlyShowing + 3, reviews.length);
+                    
+                    for (let i = currentlyShowing; i < toShow; i++) {
+                        reviews[i].classList.remove('hidden');
+                        reviews[i].classList.add('fade-in');
+                    }
+                    
+                    currentlyShowing = toShow;
+                    
+                    if (currentlyShowing >= reviews.length) {
+                        loadMoreBtn.classList.add('hidden');
+                    }
+                    
+                    showLessBtn.classList.remove('hidden');
+                    showLessBtn.classList.add('inline-flex');
+                });
+            }
+
+            if (showLessBtn) {
+                showLessBtn.addEventListener('click', function() {
+                    for (let i = 2; i < reviews.length; i++) {
+                        reviews[i].classList.add('hidden');
+                    }
+                    
+                    currentlyShowing = 2;
+                    loadMoreBtn.classList.remove('hidden');
+                    showLessBtn.classList.remove('inline-flex');
+                    showLessBtn.classList.add('hidden');
+                    
+                    // Scroll to reviews section
+                    document.querySelector('#reviews-container').scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

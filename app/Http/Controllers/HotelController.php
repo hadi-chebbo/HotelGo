@@ -108,7 +108,7 @@ class HotelController extends Controller
             ->get();
 
         $reviews = $hotel->reviews()->with('user')->get();
-
+        
         return view('components.hotel-card')->with([
             'hotel' => $hotel,
             'roomTypes' => $availableRoomTypes,
