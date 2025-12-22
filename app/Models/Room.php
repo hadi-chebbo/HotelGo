@@ -22,7 +22,7 @@ class Room extends Model
     public function roomType(){
         return $this->belongsTo(RoomType::class);
     }
-    public function room(){
+    public function reservations(){
         return $this->hasMany(Reservation::class);
     }
 }

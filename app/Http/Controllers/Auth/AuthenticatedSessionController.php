@@ -35,6 +35,9 @@ class AuthenticatedSessionController extends Controller
         if($user->role === 2){
             return redirect()->intended(route('hotelAdmin.room_types.index'));
         }
+        if($user->role === 0){
+            return redirect()->intended(route('home'));
+        }
 
         if ($user->role == 0 && $user->blocked) {
         Auth::logout(); // log them out immediately

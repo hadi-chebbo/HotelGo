@@ -6,6 +6,7 @@ use App\Models\Hotel;
 use App\Models\Review;
 use App\Models\Room;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class HotelController extends Controller
@@ -112,15 +113,15 @@ class HotelController extends Controller
         // collecting hotel reviews
         $reviews = $hotel->reviews()->with('user')->get();
 
-        if (auth()->check()) {
+        if (Auth::check()) {
             $reviews = $reviews->sortByDesc(function ($review) {
-                return $review->user_id === auth()->id() ? 1 : 0;
+                return $review->user_id === Auth::id() ? 1 : 0;
             })->values(); // ->values() resets the keys
         }
         // checking if the user can write a review (rules:had a reservation and didnt make a review before)
-        if (auth()->check()) {
+        if (Auth::check()) {
             // user
-            $canReview = auth()->user()->can('create', [Review::class, $hotel]);
+            $canReview = Auth::user()->can('create', [Review::class, $hotel]);
         } else {
             // guest
             $canReview = false;
