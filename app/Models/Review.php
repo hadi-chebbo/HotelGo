@@ -11,7 +11,6 @@ class Review extends Model
         'comment',
         'rating',
         'user_id',
-        'room_id',
         'hotel_id',
     ];
     public function hotel(){

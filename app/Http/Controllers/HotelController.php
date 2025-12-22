@@ -3,14 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Hotel;
+use App\Models\Review;
+use App\Models\Room;
 use App\Models\User;
 use Illuminate\Http\Request;
 
 class HotelController extends Controller
 {
-    //************************* */
-    //functions for system administrator
-    //************************* */
+    // ************************* */
+    // functions for system administrator
+    // ************************* */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -93,9 +95,9 @@ class HotelController extends Controller
         return view('systemAdmin.hotels.index')->with('hotels', $hotels);
     }
 
-    //************************* */
-    //functions for normal user
-    //************************* */
+    // ************************* */
+    // functions for normal user
+    // ************************* */
 
     public function show(Hotel $hotel)
     {
@@ -107,12 +109,24 @@ class HotelController extends Controller
             ->having('available_rooms_count', '>', 0)
             ->get();
 
+        // collecting hotel reviews
         $reviews = $hotel->reviews()->with('user')->get();
         
+
+        // checking if the user can write a review (rules:had a reservation and didnt make a review before)
+        if (auth()->check()) {
+            //user
+            $canReview = auth()->user()->can('create', [Review::class, $hotel]);
+        } else {
+            //guest
+            $canReview = false;
+        }
+
         return view('components.hotel-card')->with([
             'hotel' => $hotel,
             'roomTypes' => $availableRoomTypes,
-            'reviews' => $reviews
+            'reviews' => $reviews,
+            'canReview' => $canReview
         ]);
 
     }
