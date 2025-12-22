@@ -10,12 +10,6 @@
     <!-- Navbar -->
 <nav style="background-color:#1a2a5b; color:white; padding:15px 20px; display:flex; justify-content:space-between; align-items:center;">
     {{-- Hotel Name --}}
-<<<<<<< HEAD
-    <div style="font-size:22px; font-weight:bold;"><span class="text-blue-900">Hotel</span><span class="text-blue-500">Go</span></div>
-
-    {{-- Hamburger Icon --}}
-    <div onclick="openMenu()" style="font-size:24px; cursor:pointer;">☰</div>
-=======
     <div style="font-size:22px; font-weight:bold;"><span >Hotel</span><span class="text-blue-500">Go</span></div>
     <div style="display:flex; align-items:center; gap:15px;">
         {{-- Login/Register --}}
@@ -26,7 +20,6 @@
         {{-- Hamburger Icon --}}
         <div onclick="openMenu()" style="font-size:24px; cursor:pointer;">☰</div>
     </div>
->>>>>>> dev
 </nav>
 
 <!-- Side Menu (Right) -->
@@ -57,17 +50,6 @@
         <li><a href="/reservations" style="display:block; padding:12px 20px; color:white; text-decoration:none;">Past Reservations</a></li>
     </ul>
 </div>
-<<<<<<< HEAD
-<!-- Hero Image Section -->
-<section style="width: 100%; height: 500px; background: url('/images/image.png') no-repeat center center; background-size: cover; display: flex; align-items: center; justify-content: center; color: white;">
-    <div style="background-color: rgba(227, 218, 218, 0.4); padding: 40px 40px; border-radius: 10px; text-align: center;">
-        <h1 style="font-size: 48px; margin-bottom: 10px;">Welcome to HotelGo</h1>
-        <p style="font-size: 18px;">Don’t wait — your perfect stay is waiting for you!</p>
-    </div>
-</section>
-=======
-
->>>>>>> dev
 
     {{-- Page Content --}}
     <main class="min-h-screen">

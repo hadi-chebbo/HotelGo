@@ -25,11 +25,7 @@ Route::prefix('hotel')->controller(HotelController::class)->middleware([CheckIfB
     Route::get('/{hotel}/show', 'show');
 });
 Route::get('/', [HomeController::class, 'topRatedHotels'])->name('home');
-<<<<<<< HEAD
-
-=======
 Route::get('/search', [SearchController::class, 'index'])->name('search');
->>>>>>> dev
 
 
 require __DIR__.'/auth.php';
