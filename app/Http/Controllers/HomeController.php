@@ -22,18 +22,8 @@ class HomeController extends Controller
         ->filter(fn($hotel) => $hotel->average_rating > 4) 
         ->sortByDesc('average_rating') 
         ->values(); 
-        $rooms = RoomType::inRandomOrder()->limit(6)->get();
-        return view('homepage', compact('hotels', 'rooms'));
+        $roomTypes = RoomType::inRandomOrder()->limit(8)->get();
+        return view('homepage', compact('hotels', 'roomTypes'));
     }
 
-    public function search(Request $request)
-    {
-        $query = $request->input('query');
-        $hotel_name = Hotel::where('name', 'like', "%{$query}%")->get();
-        $hotel_location=Hotel::where('location', 'like', "%{$query}%")->get();
-        // Search rooms by name
-        
-
-        return view('home', compact('hotels', 'rooms'));
-    }
 }

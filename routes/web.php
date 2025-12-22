@@ -4,6 +4,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HotelController;
+use App\Http\Controllers\SearchController;
 use App\Http\Middleware\CheckIfBlocked;
 
 Route::get('/', function () {
@@ -24,7 +25,11 @@ Route::prefix('hotel')->controller(HotelController::class)->middleware([CheckIfB
     Route::get('/{hotel}/show', 'show');
 });
 Route::get('/', [HomeController::class, 'topRatedHotels'])->name('home');
+<<<<<<< HEAD
 
+=======
+Route::get('/search', [SearchController::class, 'index'])->name('search');
+>>>>>>> dev
 
 
 require __DIR__.'/auth.php';
