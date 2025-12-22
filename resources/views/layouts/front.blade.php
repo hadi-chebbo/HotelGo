@@ -66,7 +66,6 @@
     </ul>
 </div>
 
-
     {{-- Page Content --}}
     <main class="min-h-screen">
         @yield('content')

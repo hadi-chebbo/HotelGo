@@ -134,4 +134,29 @@ class HotelController extends Controller
         ]);
 
     }
+
+    
+    public function dashboard()
+    {
+        // All hotels
+        $hotels = Hotel::with('reviews')->get();
+
+        // Calculate average rating per hotel
+        $hotels = $hotels->map(function ($hotel) {
+            $hotel->average_rating = $hotel->reviews->avg('rating');
+            return $hotel;
+        });
+
+        // Metrics for cards
+        $averageRating = $hotels->avg('average_rating');
+        $totalHotels = $hotels->count();
+        $totalReviews = Review::count();
+
+        return view('systemAdmin.dashboard.index', compact(
+            'hotels',
+            'averageRating',
+            'totalHotels',
+            'totalReviews'
+        ));
+    }
 }
