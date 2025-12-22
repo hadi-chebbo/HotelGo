@@ -22,7 +22,6 @@ class ReviewFactory extends Factory
         return [
             'user_id' => User::where('role', 0)->inRandomOrder()->first()->id,
             'hotel_id'=>Hotel::inRandomOrder()->first()->id,
-            'room_id'=>Room::inRandomOrder()->first()->id,
             'comment'=>$this->faker->paragraph(),
             'rating'=>$this->faker->numberBetween(0,5),
 

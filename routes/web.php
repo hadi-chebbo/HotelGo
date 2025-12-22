@@ -20,7 +20,7 @@ Route::middleware(['auth',CheckIfBlocked::class])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-Route::prefix('hotel')->controller(HotelController::class)->middleware([CheckIfBlocked::class])->group(function () {
+Route::prefix('hotels')->controller(HotelController::class)->middleware([CheckIfBlocked::class])->group(function () {
     Route::get('/index' , 'index');
     Route::get('/{hotel}/show', 'show');
 });
@@ -35,4 +35,5 @@ require __DIR__.'/hotelAdmin/roomType.php';
 require __DIR__.'/hotelAdmin/promocode.php';
 require __DIR__.'/hotelAdmin/room.php';
 require __DIR__.'/hotelAdmin/reservation.php';
+require __DIR__.'/User/review.php';
 require __DIR__. '/systemAdmin/analytics.php';
