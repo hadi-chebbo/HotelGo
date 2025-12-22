@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Reservation;
 use App\Models\RoomType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -22,7 +23,7 @@ class RoomTypeController extends Controller
         $hotel = Auth::user()->hotel;
 
         $validated = $request->validate([
-            'type' => 'required|string|unique:room_types,type,NULL,id,hotel_id,'.$hotel->id,
+            'type' => 'required|string|unique:room_types,type,NULL,id,hotel_id,' . $hotel->id,
             'description' => 'required|string|max:255',
             'capacity' => 'required|integer|min:1',
             'price_per_night' => 'required|numeric|min:0',
@@ -47,7 +48,7 @@ class RoomTypeController extends Controller
         $hotel = Auth::user()->hotel;
 
         $validated = $request->validate([
-            'type' => 'required|string|unique:room_types,type,'.$roomType->id.',id,hotel_id,'.$hotel->id,
+            'type' => 'required|string|unique:room_types,type,' . $roomType->id . ',id,hotel_id,' . $hotel->id,
             'description' => 'string|max:255',
             'capacity' => 'required|integer|min:1',
             'price_per_night' => 'required|numeric|min:0',
@@ -70,5 +71,31 @@ class RoomTypeController extends Controller
         $roomType->update($validated);
 
         return redirect()->back()->with('success', 'Room type updated successfully!');
+    }
+
+    public function dashboard()
+    {
+        $revenueData = Reservation::with('room.roomType')
+            ->where('status', 'completed')
+            ->get()
+            ->groupBy(fn($reservation) => $reservation->room->roomType->type)
+            ->map(function ($reservations, $roomType) {
+                return [
+                    'room_type' => $roomType,
+                    'revenue'   => $reservations->sum('total_price'),
+                    'bookings'  => $reservations->count(),
+                ];
+            })
+            ->values();
+
+        $roomTypes = $revenueData->pluck('room_type');
+        $revenues  = $revenueData->pluck('revenue');
+        $bookings  = $revenueData->pluck('bookings');
+
+        return view('hotelAdmin.dashboard.index', compact(
+            'roomTypes',
+            'revenues',
+            'bookings'
+        ));
     }
 }

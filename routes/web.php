@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\RoomTypeController;
 use App\Http\Controllers\SearchController;
 use App\Http\Middleware\CheckIfBlocked;
 
