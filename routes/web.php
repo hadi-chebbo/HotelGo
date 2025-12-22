@@ -1,9 +1,10 @@
 <?php
 
-
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HotelController;
+use App\Http\Controllers\SearchController;
 use App\Http\Middleware\CheckIfBlocked;
 
 Route::get('/', function () {
@@ -23,6 +24,8 @@ Route::prefix('hotels')->controller(HotelController::class)->middleware([CheckIf
     Route::get('/index' , 'index');
     Route::get('/{hotel}/show', 'show');
 });
+Route::get('/', [HomeController::class, 'topRatedHotels'])->name('home');
+Route::get('/search', [SearchController::class, 'index'])->name('search');
 
 
 require __DIR__.'/auth.php';
