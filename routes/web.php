@@ -35,3 +35,4 @@ require __DIR__.'/hotelAdmin/roomType.php';
 require __DIR__.'/hotelAdmin/promocode.php';
 require __DIR__.'/hotelAdmin/room.php';
 require __DIR__.'/hotelAdmin/reservation.php';
+require __DIR__. '/systemAdmin/analytics.php';
