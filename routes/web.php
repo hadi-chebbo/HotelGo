@@ -4,6 +4,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HotelController;
+use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\SearchController;
 use App\Http\Middleware\CheckIfBlocked;
 
@@ -26,6 +27,10 @@ Route::prefix('hotels')->controller(HotelController::class)->middleware([CheckIf
 });
 Route::get('/', [HomeController::class, 'topRatedHotels'])->name('home');
 Route::get('/search', [SearchController::class, 'index'])->name('search');
+Route::get('/reservations',[ReservationController::class,'myReservations'])->name('reservations')->middleware('auth');
+Route::patch('/reservations/{reservation}', [ReservationController::class, 'cancelReservation'])
+    ->middleware('auth')
+    ->name('reservations.cancel');
 
 
 require __DIR__.'/auth.php';

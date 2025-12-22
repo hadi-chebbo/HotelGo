@@ -62,7 +62,7 @@
     <ul style="list-style:none; padding:0; margin:0; color:white;">
         <li><a href="/" style="display:block; padding:12px 20px; color:white; text-decoration:none;">Home</a></li>
         <li><a href="/profile" style="display:block; padding:12px 20px; color:white; text-decoration:none;">Profile</a></li>
-        <li><a href="/reservations" style="display:block; padding:12px 20px; color:white; text-decoration:none;">Past Reservations</a></li>
+        <li><a href="/reservations" style="display:block; padding:12px 20px; color:white; text-decoration:none;">Reservations & Rewards</a></li>
     </ul>
 </div>
 
