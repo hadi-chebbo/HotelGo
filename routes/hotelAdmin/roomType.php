@@ -9,6 +9,8 @@
             Route::post('/create', 'store')->name('hotelAdmin.room_types.store');
             Route::put('{roomType}/edit','update')->name('hotelAdmin.room_types.update');
             Route::delete('{roomType}/delete' , 'destroy')->name('hotelAdmin.room_types.delete');
+             Route::get('/dashboard', [RoomTypeController::class, 'dashboard'])
+        ->name('admin.dashboard');
         });
     });
 ?>
