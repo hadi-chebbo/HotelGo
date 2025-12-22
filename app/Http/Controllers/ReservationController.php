@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ReservationCancel;
 use App\Models\Guest;
 use App\Models\PromoCode;
 use App\Models\Reservation;
@@ -11,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class ReservationController extends Controller
 {
@@ -34,7 +36,7 @@ class ReservationController extends Controller
 
         $reservation->delete();
 
-        return redirect()->back()->with('success', 'reservation from '.$check_in_date.' to '.$check_out_date.' for the room '.$room_number.' deleted successfully');
+        return redirect()->back()->with('success', 'reservation from ' . $check_in_date . ' to ' . $check_out_date . ' for the room ' . $room_number . ' deleted successfully');
     }
 
     public function store(Request $request)
@@ -72,7 +74,7 @@ class ReservationController extends Controller
 
                 return redirect()->back()
                     ->withInput()
-                    ->withErrors(['room_number' => 'Room '.$validated['room_number'].' is not available. Current status: '.$room->status]);
+                    ->withErrors(['room_number' => 'Room ' . $validated['room_number'] . ' is not available. Current status: ' . $room->status]);
             }
 
             // Check for date conflicts - REFACTORED
@@ -81,7 +83,7 @@ class ReservationController extends Controller
 
                 return redirect()->back()
                     ->withInput()
-                    ->withErrors(['check_in_date' => 'Room '.$validated['room_number'].' is already booked for the selected dates.']);
+                    ->withErrors(['check_in_date' => 'Room ' . $validated['room_number'] . ' is already booked for the selected dates.']);
             }
 
             $roomType = $room->roomType;
@@ -114,8 +116,7 @@ class ReservationController extends Controller
 
             DB::commit();
 
-            return redirect()->back()->with('success', 'reservation from '.$validated['check_in_date'].' to '.$validated['check_out_date'].' for the room '.$validated['room_number'].' created successfully');
-
+            return redirect()->back()->with('success', 'reservation from ' . $validated['check_in_date'] . ' to ' . $validated['check_out_date'] . ' for the room ' . $validated['room_number'] . ' created successfully');
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -154,7 +155,7 @@ class ReservationController extends Controller
 
                 return redirect()->back()
                     ->withInput()
-                    ->withErrors(['room_number' => 'Room '.$validated['room_number'].' is not available. Current status: '.$room->status]);
+                    ->withErrors(['room_number' => 'Room ' . $validated['room_number'] . ' is not available. Current status: ' . $room->status]);
             }
 
             // Check for date conflicts - REFACTORED (exclude current reservation)
@@ -163,7 +164,7 @@ class ReservationController extends Controller
 
                 return redirect()->back()
                     ->withInput()
-                    ->withErrors(['check_in_date' => 'Room '.$validated['room_number'].' is already booked for the selected dates.']);
+                    ->withErrors(['check_in_date' => 'Room ' . $validated['room_number'] . ' is already booked for the selected dates.']);
             }
 
             $roomType = $room->roomType;
@@ -211,8 +212,7 @@ class ReservationController extends Controller
 
             DB::commit();
 
-            return redirect()->back()->with('success', 'Reservation updated successfully for room '.$room->room_number);
-
+            return redirect()->back()->with('success', 'Reservation updated successfully for room ' . $room->room_number);
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -424,5 +424,35 @@ class ReservationController extends Controller
         }
 
         return $query->exists();
+    }
+    public function myReservations()
+    {
+        $reservations = Auth::user()
+            ->reservations
+            ->sortByDesc('created_at');
+
+        return view('reservations', compact('reservations'));
+    }
+
+
+    public function cancelReservation(Reservation $reservation)
+    {
+        
+        if ($reservation->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+        if ($reservation->status === 'cancelled') {
+            return back()->with('error', 'This reservation is already cancelled.');
+        }
+        $reservation->update([
+            'status' => 'cancelled',
+        ]);
+
+        // Send email to the hotel (assuming reservation has hotel relationship and hotel has email)
+        if ($reservation->hotel && $reservation->hotel->email) {
+            Mail::to($reservation->hotel->email)->send(new ReservationCancel($reservation));
+        }
+
+        return back()->with('success', 'Reservation cancelled successfully.');
     }
 }
