@@ -24,15 +24,7 @@
         </div>
 
         <nav class="flex-1 p-4 space-y-2">
-            <!-- Dashboard -->
-            <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-2.5">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M3.75 3h7.5v7.5h-7.5V3zm0 10.5h7.5V21h-7.5v-7.5zm10.5-10.5h7.5v4.5h-7.5V3zm0 6h7.5V21h-7.5V9z" />
-                </svg>
-                <span>Dashboard</span>
-            </a>
+           
 
             <!-- Hotels -->
             <a href="{{ route('admin.hotel.index') }}" class="group flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all {{ request()->routeIs('systemAdmin.hotels.*') ? 'bg-blue-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
@@ -49,6 +41,16 @@
                 </svg>
                 <span class="font-medium">Users</span>
             </a>
+
+             <!-- Dashboard -->
+            <a href="{{ route('admin.dashboard.index') }}" class="flex items-center gap-3 px-4 py-2.5">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
+</svg>
+
+                <span>Dashboard</span>
+            </a>
+            
         </nav>
     @endif
 </aside>

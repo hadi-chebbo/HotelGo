@@ -5,7 +5,7 @@
 
     Route::prefix('admin')->controller(HotelController::class)->group(function () {
                 Route::middleware([SystemAdminMiddleware::class])->group(function () {
-                    Route::get('/Analytics','dashboard')->name('admin.hotels.dashboard');
+                    Route::get('/Analytics','dashboard')->name('admin.dashboard.index');
             
         });
     });
