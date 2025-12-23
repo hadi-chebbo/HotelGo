@@ -22,10 +22,41 @@ class ReservationController extends Controller
     public function index()
     {
         $hotel = Auth::user()->hotel;
-        $reservationsOnline = $hotel->reservations()->where('user_id', '!=', Auth::id())->get();
-        $reservationsWalkIn = $hotel->reservations()->where('user_id', Auth::id())->get();
 
-        return view('hotelAdmin.reservation.index', compact('reservationsOnline', 'reservationsWalkIn'));
+        $reservationsOnline = $hotel->reservations()
+            ->where('user_id', '!=', Auth::id())
+            ->with('payments')
+            ->get();
+
+        $reservationsWalkIn = $hotel->reservations()
+            ->where('user_id', Auth::id())
+            ->with('payments')
+            ->get();
+
+        $reservationsNotFullyPaid = [];
+        $reservationsFullyPaid = [];
+        $reservationsWalkInNotFullyPaid = [];
+        $reservationsWalkInFullyPaid = [];
+
+        foreach ($reservationsOnline as $reservation) {
+            if ($reservation->payments->sum('amount') < $reservation->total_price) {
+                $reservationsNotFullyPaid[] = $reservation;
+            } else {
+                $reservationsFullyPaid[] = $reservation;
+            }
+        }
+        foreach ($reservationsWalkIn as $reservation) {
+            if ($reservation->payments->sum('amount') < $reservation->total_price) {
+                $reservationsWalkInNotFullyPaid[] = $reservation;
+            } else {
+                $reservationsWalkInFullyPaid[] = $reservation;
+            }
+        }
+
+        return view(
+            'hotelAdmin.reservation.index',
+            compact('reservationsFullyPaid', 'reservationsNotFullyPaid', 'reservationsWalkInNotFullyPaid', 'reservationsWalkInFullyPaid')
+        );
     }
 
     public function destroy(Reservation $reservation)
@@ -36,7 +67,7 @@ class ReservationController extends Controller
 
         $reservation->delete();
 
-        return redirect()->back()->with('success', 'reservation from ' . $check_in_date . ' to ' . $check_out_date . ' for the room ' . $room_number . ' deleted successfully');
+        return redirect()->back()->with('success', 'reservation from '.$check_in_date.' to '.$check_out_date.' for the room '.$room_number.' deleted successfully');
     }
 
     public function store(Request $request)
@@ -74,7 +105,7 @@ class ReservationController extends Controller
 
                 return redirect()->back()
                     ->withInput()
-                    ->withErrors(['room_number' => 'Room ' . $validated['room_number'] . ' is not available. Current status: ' . $room->status]);
+                    ->withErrors(['room_number' => 'Room '.$validated['room_number'].' is not available. Current status: '.$room->status]);
             }
 
             // Check for date conflicts - REFACTORED
@@ -83,7 +114,7 @@ class ReservationController extends Controller
 
                 return redirect()->back()
                     ->withInput()
-                    ->withErrors(['check_in_date' => 'Room ' . $validated['room_number'] . ' is already booked for the selected dates.']);
+                    ->withErrors(['check_in_date' => 'Room '.$validated['room_number'].' is already booked for the selected dates.']);
             }
 
             $roomType = $room->roomType;
@@ -116,7 +147,7 @@ class ReservationController extends Controller
 
             DB::commit();
 
-            return redirect()->back()->with('success', 'reservation from ' . $validated['check_in_date'] . ' to ' . $validated['check_out_date'] . ' for the room ' . $validated['room_number'] . ' created successfully');
+            return redirect()->back()->with('success', 'reservation from '.$validated['check_in_date'].' to '.$validated['check_out_date'].' for the room '.$validated['room_number'].' created successfully');
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -155,7 +186,7 @@ class ReservationController extends Controller
 
                 return redirect()->back()
                     ->withInput()
-                    ->withErrors(['room_number' => 'Room ' . $validated['room_number'] . ' is not available. Current status: ' . $room->status]);
+                    ->withErrors(['room_number' => 'Room '.$validated['room_number'].' is not available. Current status: '.$room->status]);
             }
 
             // Check for date conflicts - REFACTORED (exclude current reservation)
@@ -164,7 +195,7 @@ class ReservationController extends Controller
 
                 return redirect()->back()
                     ->withInput()
-                    ->withErrors(['check_in_date' => 'Room ' . $validated['room_number'] . ' is already booked for the selected dates.']);
+                    ->withErrors(['check_in_date' => 'Room '.$validated['room_number'].' is already booked for the selected dates.']);
             }
 
             $roomType = $room->roomType;
@@ -212,7 +243,7 @@ class ReservationController extends Controller
 
             DB::commit();
 
-            return redirect()->back()->with('success', 'Reservation updated successfully for room ' . $room->room_number);
+            return redirect()->back()->with('success', 'Reservation updated successfully for room '.$room->room_number);
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -220,6 +251,34 @@ class ReservationController extends Controller
                 ->withInput()
                 ->withErrors(['error' => 'Failed to update reservation: '.$e->getMessage()]);
         }
+    }
+
+    public function completePayment(Reservation $reservation)
+    {
+
+        if (Auth::id() !== $reservation->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $paidAmount = $reservation->payments()->sum('amount');
+        $remaining = $reservation->total_price - $paidAmount;
+
+        if ($remaining <= 0) {
+            return back()->withErrors('Reservation is already fully paid.');
+        }
+
+        DB::transaction(function () use ($reservation, $remaining) {
+            $reservation->payments()->create([
+                'amount' => $remaining,
+                'method' => 'cash',
+                'status' => 'confirmed',
+                'transaction_date' => now(),
+            ]);
+        });
+
+        return back()->with('success',
+            'Reservation for guest '.$reservation->user->name.' is fully paid.'
+        );
     }
 
     // ************************** */
@@ -329,10 +388,9 @@ class ReservationController extends Controller
                 Auth::user()->decrement('loyalty_points', 500);
             }
 
-            Auth::user()->increment('loyalty_points',round($result['total_price']*0.05));
+            Auth::user()->increment('loyalty_points', round($result['total_price'] * 0.05));
 
-            //deduce loyalty points if used
-            
+            // deduce loyalty points if used
 
             DB::commit();
 
@@ -374,6 +432,40 @@ class ReservationController extends Controller
         return response()->json([
             'unavailable_dates' => array_unique($unavailableDates),
         ]);
+    }
+
+    public function completeUserPayment(Request $request, Reservation $reservation)
+    {
+        if (Auth::id() !== $reservation->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $validated = $request->validate([
+            'payment_method' => 'required|in:card,cash',
+
+            'card_number' => 'required_if:payment_method,card|digits_between:13,19',
+            'card_holder' => 'required_if:payment_method,card|string|max:255',
+            'expiry_date' => 'required_if:payment_method,card|string',
+            'cvv' => 'required_if:payment_method,card|digits:3',
+        ]);
+
+        $paid = $reservation->payments()->sum('amount');
+        $toPay = $reservation->total_price - $paid;
+
+        if ($toPay <= 0) {
+            return back()->withErrors('Reservation is already fully paid.');
+        }
+
+        DB::transaction(function () use ($reservation, $validated, $toPay) {
+            $reservation->payments()->create([
+                'amount' => $toPay,
+                'method' => $validated['payment_method'],
+                'status' => 'confirmed',
+                'transaction_date' => now(),
+            ]);
+        });
+
+        return redirect()->back()->with('success', 'Payment completed successfully.');
     }
 
     private function calculatePrice(RoomType $roomType, $checkIn, $checkOut, $promoCode, $loyalty)
@@ -425,19 +517,29 @@ class ReservationController extends Controller
 
         return $query->exists();
     }
+
     public function myReservations()
     {
         $reservations = Auth::user()
-            ->reservations
-            ->sortByDesc('created_at');
+            ->reservations()
+            ->with(['hotel', 'room.roomType', 'payments'])
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function ($reservation) {
+                $paidAmount = $reservation->payments->sum('amount');
+                $reservation->paid_amount = $paidAmount;
+                $reservation->remaining_amount = max(0, $reservation->total_price - $paidAmount);
+                $reservation->is_fully_paid = $reservation->remaining_amount <= 0;
+
+                return $reservation;
+            });
 
         return view('reservations', compact('reservations'));
     }
 
-
     public function cancelReservation(Reservation $reservation)
     {
-        
+
         if ($reservation->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }

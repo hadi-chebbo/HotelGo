@@ -12,5 +12,11 @@ Route::prefix('rooms/{roomType}')->controller(ReservationController::class)->gro
 
         // Step 2: Store reservation
         Route::post('/create', 'userStore')->name('reservation.store');
+
     });
+
+});
+Route::middleware('auth')->group(function () {
+    Route::patch('/reservations/{reservation}/complete-payment', [ReservationController::class, 'completeUserPayment'])
+        ->name('reservation.completeUserPayment');
 });

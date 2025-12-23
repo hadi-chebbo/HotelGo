@@ -101,7 +101,7 @@
 
     <div style="display:flex; overflow-x:auto; gap:30px; padding-bottom:15px;">
         @foreach($hotels as $hotel)
-        <a href="" style="text-decoration:none; color:inherit;">
+        <a href="/hotels/{{ $hotel->id }}/show" style="text-decoration:none; color:inherit;">
             <div style="
             flex: 0 0 auto;
             width:350px;
@@ -113,7 +113,7 @@
         " onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='0 12px 28px rgba(0,0,0,0.12)'"
                 onmouseout="this.style.transform='none'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.08)'">
                 <div style="position:relative;">
-                    <img src="{{ $hotel->image_url ?? 'https://via.placeholder.com/350x200' }}" alt="{{ $hotel->name }}"
+                    <img src="{{ asset('storage/' . $hotel->image) ?? 'https://via.placeholder.com/350x200' }}" alt="{{ $hotel->name }}"
                         style="width:100%; height:200px; object-fit:cover;">
                     <span style="
                     position:absolute;
