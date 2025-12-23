@@ -18,7 +18,7 @@
 
     <!-- Full-screen background photo with dark overlay -->
     <div class="relative min-h-screen flex items-center justify-center bg-gray-900">
-        <img src="/images/hotel1.jpg" alt="Hotel Background" class="absolute inset-0 w-full h-full object-cover brightness-50">
+        <img src="/images/home.png" alt="Hotel Background" class="absolute inset-0 w-full h-full object-cover brightness-50">
         
         <!-- Centered Glassmorphism Form -->
         <div class="relative z-10 w-full max-w-md px-2 py-2 bg-white/20 backdrop-blur-md rounded-3xl shadow-2xl border border-white/30">

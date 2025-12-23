@@ -37,10 +37,10 @@
     </div>
     @endif
 
-    <!-- Walk-in Reservations Table -->
+    <!-- Walk-in Not Fully Paid Reservations Table -->
     <div class="bg-white rounded-2xl shadow-sm p-6">
         <h2 class="text-lg font-semibold text-blue-900 mb-4">
-            <b>Walk-in Reservations</b>
+            <b>Unpaid Walk-in Reservations</b>
         </h2>
 
         <div class="overflow-x-auto">
@@ -58,7 +58,106 @@
                 </thead>
 
                 <tbody>
-                    @forelse($reservationsWalkIn as $reservation)
+                    @forelse($reservationsWalkInNotFullyPaid as $reservation)
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="py-3 px-4 text-center font-medium">
+                            {{ $reservation->guest->name }}
+                        </td>
+
+                        <td class="py-3 px-4 text-center">
+                            {{ $reservation->room->room_number }}
+                        </td>
+
+                        <td class="py-3 px-4 text-center">
+                            {{ \Carbon\Carbon::parse($reservation->check_in_date)->format('M d, Y') }}
+                        </td>
+
+                        <td class="py-3 px-4 text-center">
+                            {{ \Carbon\Carbon::parse($reservation->check_out_date)->format('M d, Y') }}
+                        </td>
+
+                        <td class="py-3 px-4 text-center font-semibold">
+                            ${{ number_format($reservation->total_price, 2) }}
+                        </td>
+
+                        <td class="py-3 px-4 text-center">
+                            <span class="px-3 py-1 rounded-full text-sm font-medium
+                                @if($reservation->status === 'confirmed') bg-green-100 text-green-700
+                                @elseif($reservation->status === 'checked_in') bg-blue-100 text-blue-700
+                                @elseif($reservation->status === 'checked_out') bg-gray-100 text-gray-700
+                                @elseif($reservation->status === 'cancelled') bg-red-100 text-red-700
+                                @else bg-yellow-100 text-yellow-700
+                                @endif">
+                                {{ ucfirst(str_replace('_', ' ', $reservation->status)) }}
+                            </span>
+                        </td>
+
+                        <td class="py-3 px-4 flex justify-center gap-2">
+                            <!-- Complete Payment -->
+                            <form action="{{ route('hotelAdmin.reservation.completePayment', $reservation->id) }}"
+                                method="POST">
+                                @csrf
+
+                                <x-primary-button type="submit">
+                                    Complete Payment
+                                </x-primary-button>
+                            </form>
+                            <!-- Edit -->
+                            <x-primary-button type="button" class="editReservationBtn" data-id="{{ $reservation->id }}"
+                                data-name="{{ $reservation->guest->name }}"
+                                data-email="{{ $reservation->guest->email }}"
+                                data-phone="{{ $reservation->guest->phone }}"
+                                data-room_number="{{ $reservation->room->room_number }}"
+                                data-check_in_date="{{ $reservation->check_in_date }}"
+                                data-check_out_date="{{ $reservation->check_out_date }}"
+                                data-payment_method="{{ $reservation->payments->first()->method ?? 'cash' }}">
+                                Edit
+                            </x-primary-button>
+
+                            <!-- Delete -->
+                            <x-danger-button onclick="openModal('deleteReservationModal-{{ $reservation->id }}')">
+                                Delete
+                            </x-danger-button>
+
+                            <x-confirm-delete-modal id="deleteReservationModal-{{ $reservation->id }}"
+                                title="Delete Reservation" method="DELETE"
+                                message="Are you sure you want to delete the reservation for {{ $reservation->guest->name }}?"
+                                route="{{ route('hotelAdmin.reservation.delete', $reservation->id) }}" />
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" class="py-8 text-center text-gray-500">
+                            No walk-in reservations found. Click "Add Walk-in Reservation" to create one.
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Walk-in Fully Paid Reservations Table -->
+    <div class="bg-white rounded-2xl shadow-sm p-6">
+        <h2 class="text-lg font-semibold text-blue-900 mb-4">
+            <b>Paid Walk-in Reservations</b>
+        </h2>
+
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="border-b text-gray-600">
+                        <th class="py-3 px-4 text-center">Guest Name</th>
+                        <th class="py-3 px-4 text-center">Room Number</th>
+                        <th class="py-3 px-4 text-center">Check-in</th>
+                        <th class="py-3 px-4 text-center">Check-out</th>
+                        <th class="py-3 px-4 text-center">Total Price</th>
+                        <th class="py-3 px-4 text-center">Status</th>
+                        <th class="py-3 px-4 text-center">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @forelse($reservationsWalkInFullyPaid as $reservation)
                     <tr class="border-b hover:bg-gray-50 transition">
                         <td class="py-3 px-4 text-center font-medium">
                             {{ $reservation->guest->name }}
@@ -94,8 +193,7 @@
 
                         <td class="py-3 px-4 flex justify-center gap-2">
                             <!-- Edit -->
-                            <x-primary-button type="button" class="editReservationBtn" 
-                                data-id="{{ $reservation->id }}"
+                            <x-primary-button type="button" class="editReservationBtn" data-id="{{ $reservation->id }}"
                                 data-name="{{ $reservation->guest->name }}"
                                 data-email="{{ $reservation->guest->email }}"
                                 data-phone="{{ $reservation->guest->phone }}"
@@ -111,9 +209,8 @@
                                 Delete
                             </x-danger-button>
 
-                            <x-confirm-delete-modal id="deleteReservationModal-{{ $reservation->id }}" 
-                                title="Delete Reservation"
-                                method="DELETE" 
+                            <x-confirm-delete-modal id="deleteReservationModal-{{ $reservation->id }}"
+                                title="Delete Reservation" method="DELETE"
                                 message="Are you sure you want to delete the reservation for {{ $reservation->guest->name }}?"
                                 route="{{ route('hotelAdmin.reservation.delete', $reservation->id) }}" />
                         </td>
@@ -130,10 +227,10 @@
         </div>
     </div>
 
-    <!-- Online Reservations Table -->
+    <!-- Online Not Fully Paid Reservations Table -->
     <div class="bg-white rounded-2xl shadow-sm p-6 mt-8">
         <h2 class="text-lg font-semibold text-blue-900 mb-4">
-            <b>Online Reservations</b>
+            <b>Unpaid Online Reservations</b>
         </h2>
 
         <div class="overflow-x-auto">
@@ -151,10 +248,10 @@
                 </thead>
 
                 <tbody>
-                    @forelse($reservationsOnline as $reservation)
+                    @forelse($reservationsNotFullyPaid as $reservation)
                     <tr class="border-b hover:bg-gray-50 transition">
                         <td class="py-3 px-4 text-center font-medium">
-                            {{ $reservation->guest->name }}
+                            {{ $reservation->user->name }}
                         </td>
 
                         <td class="py-3 px-4 text-center">
@@ -186,27 +283,110 @@
                         </td>
 
                         <td class="py-3 px-4 flex justify-center gap-2">
-                            <!-- View Details -->
-                            <x-primary-button type="button">
-                                View
-                            </x-primary-button>
+                            <!-- Complete Payment -->
+                            <form action="{{ route('hotelAdmin.reservation.completePayment', $reservation->id) }}"
+                                method="POST">
+                                @csrf
+
+                                <x-primary-button type="submit">
+                                    Complete Payment
+                                </x-primary-button>
+                            </form>
 
                             <!-- Delete -->
                             <x-danger-button onclick="openModal('deleteOnlineReservationModal-{{ $reservation->id }}')">
                                 Cancel
                             </x-danger-button>
 
-                            <x-confirm-delete-modal id="deleteOnlineReservationModal-{{ $reservation->id }}" 
-                                title="Cancel Reservation"
-                                method="DELETE" 
-                                message="Are you sure you want to cancel the reservation for {{ $reservation->guest->name }}?"
+                            <x-confirm-delete-modal id="deleteOnlineReservationModal-{{ $reservation->id }}"
+                                title="Cancel Reservation" method="DELETE"
+                                message="Are you sure you want to cancel the reservation for {{ $reservation->user->name }}?"
                                 route="{{ route('hotelAdmin.reservation.delete', $reservation->id) }}" />
                         </td>
                     </tr>
                     @empty
                     <tr>
                         <td colspan="7" class="py-8 text-center text-gray-500">
-                            No online reservations found.
+                            No unpaid reservations found.
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Online Fully Paid Reservations Table -->
+    <div class="bg-white rounded-2xl shadow-sm p-6 mt-8">
+        <h2 class="text-lg font-semibold text-blue-900 mb-4">
+            <b>Online Paid Reservations</b>
+        </h2>
+
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="border-b text-gray-600">
+                        <th class="py-3 px-4 text-center">Guest Name</th>
+                        <th class="py-3 px-4 text-center">Room Number</th>
+                        <th class="py-3 px-4 text-center">Check-in</th>
+                        <th class="py-3 px-4 text-center">Check-out</th>
+                        <th class="py-3 px-4 text-center">Total Price</th>
+                        <th class="py-3 px-4 text-center">Status</th>
+                        <th class="py-3 px-4 text-center">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @forelse($reservationsFullyPaid as $reservation)
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="py-3 px-4 text-center font-medium">
+                            {{ $reservation->user->name }}
+                        </td>
+
+                        <td class="py-3 px-4 text-center">
+                            {{ $reservation->room->room_number }}
+                        </td>
+
+                        <td class="py-3 px-4 text-center">
+                            {{ \Carbon\Carbon::parse($reservation->check_in_date)->format('M d, Y') }}
+                        </td>
+
+                        <td class="py-3 px-4 text-center">
+                            {{ \Carbon\Carbon::parse($reservation->check_out_date)->format('M d, Y') }}
+                        </td>
+
+                        <td class="py-3 px-4 text-center font-semibold">
+                            ${{ number_format($reservation->total_price, 2) }}
+                        </td>
+
+                        <td class="py-3 px-4 text-center">
+                            <span class="px-3 py-1 rounded-full text-sm font-medium
+                                @if($reservation->status === 'confirmed') bg-green-100 text-green-700
+                                @elseif($reservation->status === 'checked_in') bg-blue-100 text-blue-700
+                                @elseif($reservation->status === 'checked_out') bg-gray-100 text-gray-700
+                                @elseif($reservation->status === 'cancelled') bg-red-100 text-red-700
+                                @else bg-yellow-100 text-yellow-700
+                                @endif">
+                                {{ ucfirst(str_replace('_', ' ', $reservation->status)) }}
+                            </span>
+                        </td>
+
+                        <td class="py-3 px-4 flex justify-center gap-2">
+
+                            <!-- Delete -->
+                            <x-danger-button onclick="openModal('deleteOnlineReservationModal-{{ $reservation->id }}')">
+                                Cancel
+                            </x-danger-button>
+
+                            <x-confirm-delete-modal id="deleteOnlineReservationModal-{{ $reservation->id }}"
+                                title="Cancel Reservation" method="DELETE"
+                                message="Are you sure you want to cancel the reservation for {{ $reservation->user->name }}?"
+                                route="{{ route('hotelAdmin.reservation.delete', $reservation->id) }}" />
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" class="py-8 text-center text-gray-500">
+                            No online fully paid reservations found.
                         </td>
                     </tr>
                     @endforelse
