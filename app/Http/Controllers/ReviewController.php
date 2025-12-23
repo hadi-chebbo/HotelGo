@@ -39,7 +39,7 @@ class ReviewController extends Controller
         return redirect()->back()->with('success','Review updated successfully');
     }
 
-    public function destroy(Review $review){
+    public function destroy(Hotel $hotel,Review $review){
         $this->authorize('delete',$review);
 
         $review->delete();

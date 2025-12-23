@@ -1,7 +1,9 @@
 @props([
     'roomType',
     'showAvailableCount' => false,
-    'compact' => false
+    'compact' => false,
+    'badge' => null,
+    'badgeColor' => 'yellow'
 ])
 
 <div class="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
@@ -17,6 +19,20 @@
             <svg class="w-20 h-20 text-white opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
             </svg>
+        </div>
+        @endif
+        
+        <!-- Custom Badge (like "Suggested") -->
+        @if($badge)
+        <div class="absolute top-4 left-4 
+            @if($badgeColor === 'yellow') bg-yellow-400
+            @elseif($badgeColor === 'blue') bg-blue-500
+            @elseif($badgeColor === 'green') bg-green-500
+            @elseif($badgeColor === 'red') bg-red-500
+            @else bg-yellow-400
+            @endif
+            text-white px-3 py-1.5 rounded-full text-sm font-semibold shadow-lg">
+            {{ $badge }}
         </div>
         @endif
         
@@ -72,7 +88,20 @@
                 </p>
                 <p class="text-xs text-gray-500">per night</p>
             </div>
-            <x-reservation-modal :roomType="$roomType" />
+            
+            @auth
+                <!-- Authenticated Users: Show Book Now Button -->
+                <x-reservation-modal :roomType="$roomType" />
+            @else
+                <!-- Guest Users: Show Login to Book Button -->
+                <a href="{{ route('login') }}" 
+                   class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    Login to Book
+                </a>
+            @endauth
         </div>
     </div>
 </div>
