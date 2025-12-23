@@ -6,43 +6,38 @@
 <div class="max-w-6xl mx-auto py-12 px-4">
     <h2 class="text-2xl font-bold text-blue-900 mb-12 text-center">Reservations and loyalty points</h2>
 
+    <!-- Loyalty Points Card (keep as is) -->
     <div class="mb-12">
-    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 text-white shadow-xl p-8 flex items-center justify-between">
+        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 text-white shadow-xl p-8 flex items-center justify-between">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full"></div>
+            <div class="absolute -bottom-12 -left-12 w-40 h-40 bg-white/5 rounded-full"></div>
 
-        {{-- Decorative Circles --}}
-        <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full"></div>
-        <div class="absolute -bottom-12 -left-12 w-40 h-40 bg-white/5 rounded-full"></div>
+            <div class="relative z-10 flex-shrink-0 mr-8 text-center">
+                <p class="text-blue-200 uppercase tracking-wide text-sm font-semibold mb-1">Your Points</p>
+                <p class="text-5xl font-extrabold text-white">
+                    {{ Auth::user()->loyalty_points ?? 0 }}
+                </p>
+            </div>
 
-        {{-- Loyalty Points on the Left --}}
-        <div class="relative z-10 flex-shrink-0 mr-8 text-center">
-            <p class="text-blue-200 uppercase tracking-wide text-sm font-semibold mb-1">Your Points</p>
-            <p class="text-5xl font-extrabold text-white">
-                {{ Auth::user()->loyalty_points ?? 0 }}
-            </p>
-        </div>
-
-        {{-- Motivational Message on the Right --}}
-        <div class="relative z-10 max-w-2xl">
-            <p class="uppercase tracking-widest text-sm text-blue-200 font-semibold mb-2">
-                HotelGo Loyalty Program
-            </p>
-
-            <h2 class="text-2xl md:text-3xl font-bold mb-3">
-                Every Stay Brings You Closer ✨
-            </h2>
-
-            <p class="text-blue-100 text-lg leading-relaxed">
-                Thank you for choosing <span class="font-semibold text-white">HotelGo</span>.
-                Each reservation earns you loyalty points that unlock exclusive discounts,
-                special rewards, and unforgettable stays.
-                <br class="hidden md:block">
-                <span class="font-semibold text-white">
-                    Keep booking, keep earning, and let your journey be rewarded.
-                </span>
-            </p>
+            <div class="relative z-10 max-w-2xl">
+                <p class="uppercase tracking-widest text-sm text-blue-200 font-semibold mb-2">
+                    HotelGo Loyalty Program
+                </p>
+                <h2 class="text-2xl md:text-3xl font-bold mb-3">
+                    Every Stay Brings You Closer ✨
+                </h2>
+                <p class="text-blue-100 text-lg leading-relaxed">
+                    Thank you for choosing <span class="font-semibold text-white">HotelGo</span>.
+                    Each reservation earns you loyalty points that unlock exclusive discounts,
+                    special rewards, and unforgettable stays.
+                    <br class="hidden md:block">
+                    <span class="font-semibold text-white">
+                        Keep booking, keep earning, and let your journey be rewarded.
+                    </span>
+                </p>
+            </div>
         </div>
     </div>
-</div>
 
     {{-- Success & Error Messages --}}
     @if(session('success'))
@@ -65,51 +60,160 @@
         <h2 class="text-2xl font-semibold text-blue-800 mb-6">Confirmed Reservations</h2>
         <div class="space-y-6">
             @foreach($confirmed as $reservation)
-                <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row justify-between items-start md:items-center hover:shadow-2xl transition-shadow duration-300">
-                    <div class="flex-1 mb-4 md:mb-0">
-                        <h3 class="text-xl font-bold text-blue-900 mb-2">{{ $reservation->hotel->name ?? 'Hotel Name' }}</h3>
-                        <p class="text-gray-700 mb-1"><span class="font-semibold">Room Number:</span> {{ $reservation->room->room_number ?? '-' }}</p>
-                        <p class="text-gray-700 mb-1">
-                            <span class="font-semibold">Room:</span> {{ $reservation->room->roomType->type ?? '-' }}
-                            <span class="mx-2">|</span>
-                            <span class="font-semibold">Guests:</span> {{ $reservation->room->roomType->capacity ?? '-' }}
-                        </p>
-                        <p class="text-gray-700 mb-1">
-                            <span class="font-semibold">Check-in:</span> {{ $reservation->check_in_date ?? '-' }}
-                            <span class="mx-2">|</span>
-                            <span class="font-semibold">Check-out:</span> {{ $reservation->check_out_date ?? '-' }}
-                        </p>
-                        <p class="mt-2">
-                            <span class="font-semibold text-blue-600">Status:</span>
-                            <span class="px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-700">
-                                {{ ucfirst($reservation->status) }}
-                            </span>
-                        </p>
+                <div class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-shadow duration-300">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <div class="flex-1 mb-4 md:mb-0">
+                            <h3 class="text-xl font-bold text-blue-900 mb-2">{{ $reservation->hotel->name ?? 'Hotel Name' }}</h3>
+                            <p class="text-gray-700 mb-1"><span class="font-semibold">Room Number:</span> {{ $reservation->room->room_number ?? '-' }}</p>
+                            <p class="text-gray-700 mb-1">
+                                <span class="font-semibold">Room:</span> {{ $reservation->room->roomType->type ?? '-' }}
+                                <span class="mx-2">|</span>
+                                <span class="font-semibold">Guests:</span> {{ $reservation->room->roomType->capacity ?? '-' }}
+                            </p>
+                            <p class="text-gray-700 mb-1">
+                                <span class="font-semibold">Check-in:</span> {{ $reservation->check_in_date ?? '-' }}
+                                <span class="mx-2">|</span>
+                                <span class="font-semibold">Check-out:</span> {{ $reservation->check_out_date ?? '-' }}
+                            </p>
+                            <p class="mt-2">
+                                <span class="font-semibold text-blue-600">Status:</span>
+                                <span class="px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-700">
+                                    {{ ucfirst($reservation->status) }}
+                                </span>
+                            </p>
+                        </div>
+
+                        <div class="flex-shrink-0 flex gap-2">
+                            <x-primary-button 
+                                class="bg-red-600 hover:bg-red-700"
+                                onclick="openModal('cancel-{{ $reservation->id }}')"
+                            >
+                                Cancel
+                            </x-primary-button>
+
+                            <x-confirm-delete-modal
+                                id="cancel-{{ $reservation->id }}"
+                                title="Cancel Reservation"
+                                message="Your reservation will be cancelled. No deposit refund."
+                                :route="route('reservations.cancel', $reservation)"
+                                method="PATCH"
+                                confirm="Cancel"
+                            />
+                        </div>
                     </div>
 
-                    <div class="flex-shrink-0">
-                        <x-primary-button 
-                            class="bg-green-600 hover:bg-green-700"
-                            onclick="openModal('cancel-{{ $reservation->id }}')"
-                        >
-                            Cancel
-                        </x-primary-button>
+                    {{-- Payment Information --}}
+                    <div class="mt-6 pt-6 border-t border-gray-200">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-blue-50 rounded-lg p-4">
+                                <p class="text-sm text-gray-600 mb-1">Total Price</p>
+                                <p class="text-2xl font-bold text-blue-900">${{ number_format($reservation->total_price, 2) }}</p>
+                            </div>
+                            <div class="bg-green-50 rounded-lg p-4">
+                                <p class="text-sm text-gray-600 mb-1">Paid</p>
+                                <p class="text-2xl font-bold text-green-600">${{ number_format($reservation->paid_amount, 2) }}</p>
+                            </div>
+                            <div class="bg-orange-50 rounded-lg p-4">
+                                <p class="text-sm text-gray-600 mb-1">Remaining</p>
+                                <p class="text-2xl font-bold text-orange-600">${{ number_format($reservation->remaining_amount, 2) }}</p>
+                            </div>
+                        </div>
 
-                        <x-confirm-delete-modal
-                            id="cancel-{{ $reservation->id }}"
-                            title="Cancel Reservation"
-                            message="Your reservation will be cancelled. No deposit refund."
-                            :route="route('reservations.cancel', $reservation)"
-                            method="PATCH"
-                            confirm="Cancel"
-                        />
+                        @if(!$reservation->is_fully_paid)
+                            <div class="mt-4 flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                <div class="flex items-center gap-3">
+                                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                    </svg>
+                                    <div>
+                                        <p class="font-semibold text-yellow-900">Payment Required</p>
+                                        <p class="text-sm text-yellow-700">You still owe ${{ number_format($reservation->remaining_amount, 2) }} for this reservation</p>
+                                    </div>
+                                </div>
+                                <x-primary-button 
+                                    class="bg-blue-600 hover:bg-blue-700"
+                                    onclick="openModal('pay-{{ $reservation->id }}')"
+                                >
+                                    Pay Now
+                                </x-primary-button>
+                            </div>
+
+                            {{-- Payment Modal --}}
+                            <div id="pay-{{ $reservation->id }}" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4">
+                                    <div class="p-6">
+                                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Complete Payment</h3>
+                                        <p class="text-gray-600 mb-6">Pay the remaining balance of ${{ number_format($reservation->remaining_amount, 2) }}</p>
+
+                                        <form action="{{ route('reservation.completeUserPayment', $reservation) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+
+                                            <div class="mb-4">
+                                                <label class="block text-sm font-semibold text-gray-700 mb-2">Payment Method</label>
+                                                <select name="payment_method" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                                    <option value="card">Credit/Debit Card</option>
+                                                    <option value="cash">Cash at Hotel</option>
+                                                </select>
+                                            </div>
+
+                                            <div id="card-fields-{{ $reservation->id }}">
+                                                <div class="mb-4">
+                                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Card Number</label>
+                                                    <input type="text" name="card_number" placeholder="1234 5678 9012 3456" 
+                                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+                                                </div>
+                                                <div class="mb-4">
+                                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Cardholder Name</label>
+                                                    <input type="text" name="card_holder" placeholder="John Doe" 
+                                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+                                                </div>
+                                                <div class="grid grid-cols-2 gap-4 mb-4">
+                                                    <div>
+                                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Expiry</label>
+                                                        <input type="text" name="expiry_date" placeholder="MM/YY" 
+                                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-sm font-semibold text-gray-700 mb-2">CVV</label>
+                                                        <input type="text" name="cvv" placeholder="123" 
+                                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex gap-3 mt-6">
+                                                <button type="button" onclick="closeModal('pay-{{ $reservation->id }}')" 
+                                                        class="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-semibold">
+                                                    Cancel
+                                                </button>
+                                                <button type="submit" 
+                                                        class="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+                                                    Pay ${{ number_format($reservation->remaining_amount, 2) }}
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <div class="mt-4 flex items-center gap-3 bg-green-50 border border-green-200 rounded-lg p-4">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <div>
+                                    <p class="font-semibold text-green-900">Fully Paid</p>
+                                    <p class="text-sm text-green-700">This reservation has been paid in full</p>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             @endforeach
         </div>
     @endif
 
-    {{-- Completed & Cancelled Reservations --}}
+    {{-- Past Reservations (keep as is) --}}
     @php
         $otherReservations = $reservations->whereIn('status', ['completed', 'cancelled']);
     @endphp
@@ -117,28 +221,30 @@
         <h2 class="text-2xl font-semibold text-blue-800 mt-12 mb-6">Past Reservations</h2>
         <div class="space-y-6">
             @foreach($otherReservations as $reservation)
-                <div class="bg-gray-50 rounded-2xl shadow p-6 flex flex-col md:flex-row justify-between items-start md:items-center hover:shadow-lg transition-shadow duration-300">
-                    <div class="flex-1 mb-4 md:mb-0">
-                        <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $reservation->hotel->name ?? 'Hotel Name' }}</h3>
-                        <p class="text-gray-700 mb-1"><span class="font-semibold">Room Number:</span> {{ $reservation->room->room_number ?? '-' }}</p>
-                        <p class="text-gray-700 mb-1">
-                            <span class="font-semibold">Room:</span> {{ $reservation->room->roomType->type ?? '-' }}
-                            <span class="mx-2">|</span>
-                            <span class="font-semibold">Guests:</span> {{ $reservation->room->roomType->capacity ?? '-' }}
-                        </p>
-                        <p class="text-gray-700 mb-1">
-                            <span class="font-semibold">Check-in:</span> {{ $reservation->check_in_date ?? '-' }}
-                            <span class="mx-2">|</span>
-                            <span class="font-semibold">Check-out:</span> {{ $reservation->check_out_date ?? '-' }}
-                        </p>
-                        <p class="mt-2">
-                            <span class="font-semibold text-blue-600">Status:</span>
-                            <span class="px-3 py-1 rounded-full text-sm font-semibold
-                                @if($reservation->status === 'cancelled') bg-red-100 text-red-700 
-                                @else bg-gray-200 text-gray-800 @endif">
-                                {{ ucfirst($reservation->status) }}
-                            </span>
-                        </p>
+                <div class="bg-gray-50 rounded-2xl shadow p-6 hover:shadow-lg transition-shadow duration-300">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <div class="flex-1 mb-4 md:mb-0">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $reservation->hotel->name ?? 'Hotel Name' }}</h3>
+                            <p class="text-gray-700 mb-1"><span class="font-semibold">Room Number:</span> {{ $reservation->room->room_number ?? '-' }}</p>
+                            <p class="text-gray-700 mb-1">
+                                <span class="font-semibold">Room:</span> {{ $reservation->room->roomType->type ?? '-' }}
+                                <span class="mx-2">|</span>
+                                <span class="font-semibold">Guests:</span> {{ $reservation->room->roomType->capacity ?? '-' }}
+                            </p>
+                            <p class="text-gray-700 mb-1">
+                                <span class="font-semibold">Check-in:</span> {{ $reservation->check_in_date ?? '-' }}
+                                <span class="mx-2">|</span>
+                                <span class="font-semibold">Check-out:</span> {{ $reservation->check_out_date ?? '-' }}
+                            </p>
+                            <p class="mt-2">
+                                <span class="font-semibold text-blue-600">Status:</span>
+                                <span class="px-3 py-1 rounded-full text-sm font-semibold
+                                    @if($reservation->status === 'cancelled') bg-red-100 text-red-700 
+                                    @else bg-gray-200 text-gray-800 @endif">
+                                    {{ ucfirst($reservation->status) }}
+                                </span>
+                            </p>
+                        </div>
                     </div>
                 </div>
             @endforeach
@@ -154,4 +260,24 @@
         </div>
     @endif
 </div>
+
+<script>
+// Toggle card fields based on payment method
+document.querySelectorAll('select[name="payment_method"]').forEach(select => {
+    select.addEventListener('change', function() {
+        const modalId = this.closest('.modal').id;
+        const reservationId = modalId.replace('pay-', '');
+        const cardFields = document.getElementById('card-fields-' + reservationId);
+        const cardInputs = cardFields.querySelectorAll('input');
+        
+        if (this.value === 'cash') {
+            cardFields.style.display = 'none';
+            cardInputs.forEach(input => input.removeAttribute('required'));
+        } else {
+            cardFields.style.display = 'block';
+            cardInputs.forEach(input => input.setAttribute('required', 'required'));
+        }
+    });
+});
+</script>
 @endsection

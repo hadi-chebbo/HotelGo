@@ -55,7 +55,7 @@ class ReservationController extends Controller
 
         return view(
             'hotelAdmin.reservation.index',
-            compact('reservationsFullyPaid', 'reservationsNotFullyPaid', 'reservationsWalkInNotFullyPaid','reservationsWalkInFullyPaid')
+            compact('reservationsFullyPaid', 'reservationsNotFullyPaid', 'reservationsWalkInNotFullyPaid', 'reservationsWalkInFullyPaid')
         );
     }
 
@@ -255,20 +255,32 @@ class ReservationController extends Controller
 
     public function completePayment(Reservation $reservation)
     {
-        $payments = $reservation->payments;
-        $paid_amount = $payments->sum('amount');
 
-        $complete_amount = $reservation->total_price - $paid_amount;
+        if (Auth::id() !== $reservation->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
 
-        $payment = $reservation->payments()->create([
-            'amount' => $complete_amount,
-            'method' => 'cash',
-            'status' => 'confirmed',
-            'transaction_date' => now(),
-        ]);
+        $paidAmount = $reservation->payments()->sum('amount');
+        $remaining = $reservation->total_price - $paidAmount;
 
-        return redirect()->back()->with('success','Reservation for guest '.$reservation->user->name.'is fully paid');
+        if ($remaining <= 0) {
+            return back()->withErrors('Reservation is already fully paid.');
+        }
+
+        DB::transaction(function () use ($reservation, $remaining) {
+            $reservation->payments()->create([
+                'amount' => $remaining,
+                'method' => 'cash',
+                'status' => 'confirmed',
+                'transaction_date' => now(),
+            ]);
+        });
+
+        return back()->with('success',
+            'Reservation for guest '.$reservation->user->name.' is fully paid.'
+        );
     }
+
     // ************************** */
     // methods for normal user
     // ************************** */
@@ -422,6 +434,40 @@ class ReservationController extends Controller
         ]);
     }
 
+    public function completeUserPayment(Request $request, Reservation $reservation)
+    {
+        if (Auth::id() !== $reservation->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $validated = $request->validate([
+            'payment_method' => 'required|in:card,cash',
+
+            'card_number' => 'required_if:payment_method,card|digits_between:13,19',
+            'card_holder' => 'required_if:payment_method,card|string|max:255',
+            'expiry_date' => 'required_if:payment_method,card|string',
+            'cvv' => 'required_if:payment_method,card|digits:3',
+        ]);
+
+        $paid = $reservation->payments()->sum('amount');
+        $toPay = $reservation->total_price - $paid;
+
+        if ($toPay <= 0) {
+            return back()->withErrors('Reservation is already fully paid.');
+        }
+
+        DB::transaction(function () use ($reservation, $validated, $toPay) {
+            $reservation->payments()->create([
+                'amount' => $toPay,
+                'method' => $validated['payment_method'],
+                'status' => 'confirmed',
+                'transaction_date' => now(),
+            ]);
+        });
+
+        return redirect()->back()->with('success', 'Payment completed successfully.');
+    }
+
     private function calculatePrice(RoomType $roomType, $checkIn, $checkOut, $promoCode, $loyalty)
     {
         $days = Carbon::parse($checkIn)->diffInDays($checkOut);
@@ -475,8 +521,18 @@ class ReservationController extends Controller
     public function myReservations()
     {
         $reservations = Auth::user()
-            ->reservations
-            ->sortByDesc('created_at');
+            ->reservations()
+            ->with(['hotel', 'room.roomType', 'payments'])
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function ($reservation) {
+                $paidAmount = $reservation->payments->sum('amount');
+                $reservation->paid_amount = $paidAmount;
+                $reservation->remaining_amount = max(0, $reservation->total_price - $paidAmount);
+                $reservation->is_fully_paid = $reservation->remaining_amount <= 0;
+
+                return $reservation;
+            });
 
         return view('reservations', compact('reservations'));
     }
