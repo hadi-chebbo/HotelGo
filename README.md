@@ -194,7 +194,7 @@ id · hotel_id (FK) · code · discount_% · start_date · end_date
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/hotelgo.git
+git clone https://github.com/hadi-chebbo/hotelgo.git
 cd hotelgo
 
 # Install dependencies
