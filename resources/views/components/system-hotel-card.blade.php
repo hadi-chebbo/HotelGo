@@ -23,7 +23,7 @@
         <!-- Hotel basic info -->
         <div class="flex justify-between items-center">
             <h3 class="text-xl font-semibold text-blue-900">{{ $hotel->name }}</h3>
-            <span class="text-gray-500 text-sm">⭐ {{ $hotel->rating ?? 'N/A' }} / 5</span>
+            <span class="text-gray-500 text-sm">⭐ {{ $hotel->average_rating ?? 'N/A' }} / 5</span>
         </div>
 
         <p class="text-gray-600 mt-1">{{ $hotel->location }}</p>
@@ -41,15 +41,7 @@
             <!-- Edit Button -->
             <x-primary-button
                 type="button"
-                class="editHotelBtn"
-                data-id="{{ $hotel->id }}"
-                data-name="{{ $hotel->name }}"
-                data-location="{{ $hotel->location }}"
-                data-rating="{{ $hotel->rating ?? 0 }}"
-                data-email="{{ $hotel->email }}"
-                data-social_links="{{ is_array($hotel->social_links) ? implode(',', $hotel->social_links) : ($hotel->social_links ?? '') }}"
-                data-admin_phone="{{ $hotel->user?->phone ?? '' }}"
-                data-image="{{ $hotel->image ?? '' }}"
+                onclick="openModal('editHotelModal-{{ $hotel->id }}')"
             >
                 Edit
             </x-primary-button>
@@ -73,36 +65,14 @@
 <x-edit-modal 
     id="editHotelModal-{{ $hotel->id }}"
     title="Edit Hotel"
+    route="{{ route('admin.hotel.update', $hotel->id) }}"
     :fields="[
         ['name' => 'name', 'label' => 'Name', 'type' => 'text'],
         ['name' => 'location', 'label' => 'Location', 'type' => 'text'],
         ['name' => 'rating', 'label' => 'Rating', 'type' => 'number', 'min' => 0, 'max' => 5, 'step' => 0.1],
         ['name' => 'email', 'label' => 'Email', 'type' => 'email'],
-        ['name' => 'social_links', 'label' => 'Social Links', 'type' => 'textarea'],
+        ['name' => 'social_links', 'label' => 'Social Links (one per line)', 'type' => 'textarea'],
         ['name' => 'admin_phone', 'label' => 'Admin Phone', 'type' => 'text'],
         ['name' => 'image', 'label' => 'Hotel Image', 'type' => 'file', 'accept' => 'image/*'],
     ]"
 />
-
-<script>
-    document.querySelectorAll('.editHotelBtn').forEach(button => {
-        button.addEventListener('click', function() {
-            const hotelId = this.dataset.id;
-            const modalId = `editHotelModal-${hotelId}`;
-            
-            const data = {
-                name: this.dataset.name,
-                location: this.dataset.location,
-                rating: this.dataset.rating,
-                email: this.dataset.email,
-                social_links: this.dataset.social_links ? this.dataset.social_links.split(',').join("\n") : '',
-                admin_phone: this.dataset.admin_phone,
-                image: this.dataset.image
-            };
-            
-            const action = `/admin/hotels/${hotelId}/edit`;
-            
-            openModal(modalId, data, action);
-        });
-    });
-</script>
