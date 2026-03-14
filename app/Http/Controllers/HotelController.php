@@ -6,8 +6,8 @@ use App\Models\Hotel;
 use App\Models\Review;
 use App\Models\Room;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HotelController extends Controller
 {
@@ -91,7 +91,17 @@ class HotelController extends Controller
 
     public function adminIndex()
     {
-        $hotels = Hotel::with('user')->get();
+        $hotels = Hotel::with(['user', 'reviews'])->get();
+
+        $hotels = $hotels->map(function ($hotel) {
+            $average = $hotel->reviews->avg('rating');
+
+            $hotel->average_rating = $average !== null
+                ? round($average, 1)
+                : null;
+
+            return $hotel;
+        });
 
         return view('systemAdmin.hotels.index')->with('hotels', $hotels);
     }
@@ -136,7 +146,6 @@ class HotelController extends Controller
 
     }
 
-    
     public function dashboard()
     {
         // All hotels
@@ -145,6 +154,7 @@ class HotelController extends Controller
         // Calculate average rating per hotel
         $hotels = $hotels->map(function ($hotel) {
             $hotel->average_rating = $hotel->reviews->avg('rating');
+
             return $hotel;
         });
 

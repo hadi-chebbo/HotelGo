@@ -20,14 +20,13 @@ class PromoCodeController extends Controller
     public function store(Request $request)
     {
         $hotel = Auth::user()->hotel;
-        if ($hotel->promoCodes()
-            ->where('code', $request->code)
-            ->where('id', '!=', $promoCode->id) // exclude the one being updated
-            ->exists()) {
-        return redirect()->back()
-            ->withErrors(['code' => 'This promo code already exists for your hotel.'])
-            ->withInput();
+        // Check if the promo code already exists for this hotel
+        if ($hotel->promoCodes()->where('code', $request->code)->exists()) {
+            return redirect()->back()
+                ->withErrors(['code' => 'This promo code already exists for your hotel.'])
+                ->withInput();
         }
+        
         $data = $request->validate([
             'code' => 'required|string',
             'discount_percentage' => 'required|integer|min:1|max:100',
@@ -51,12 +50,15 @@ class PromoCodeController extends Controller
     {
         $hotel = Auth::user()->hotel;
 
-        // Check if the promo code already exists for this hotel
-        if ($hotel->promoCodes()->where('code', $request->code)->exists()) {
-            return redirect()->back()
-                ->withErrors(['code' => 'This promo code already exists for your hotel.'])
-                ->withInput();
+        if ($hotel->promoCodes()
+            ->where('code', $request->code)
+            ->where('id', '!=', $promoCode->id) // exclude the one being updated
+            ->exists()) {
+        return redirect()->back()
+            ->withErrors(['code' => 'This promo code already exists for your hotel.'])
+            ->withInput();
         }
+        
         $data = $request->validate([
             'code' => 'required|string',
             'discount_percentage' => 'required|integer|min:1|max:100',
