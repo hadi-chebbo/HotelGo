@@ -19,7 +19,7 @@ class HomeController extends Controller
             $hotel->average_rating = $reviews->count() ? $reviews->avg('rating') : 0;
             return $hotel;
         })
-        ->filter(fn($hotel) => $hotel->average_rating > 4) 
+        ->filter(fn($hotel) => $hotel->average_rating >= 3.5) 
         ->sortByDesc('average_rating') 
         ->values(); 
         $roomTypes = RoomType::inRandomOrder()->limit(8)->get();
