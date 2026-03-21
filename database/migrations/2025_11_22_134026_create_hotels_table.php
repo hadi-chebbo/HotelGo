@@ -18,6 +18,8 @@ return new class extends Migration
             $table->text('description');
             $table->string('email');
             $table->string('location');
+            $table->decimal('longitude',10, 7);
+            $table->decimal('latitude',10, 7);
             $table->json('social_links');
             $table->string('image')->nullable();
             $table->timestamps();

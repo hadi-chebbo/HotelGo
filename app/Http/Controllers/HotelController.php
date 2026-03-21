@@ -4,17 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Hotel;
 use App\Models\Review;
-use App\Models\Room;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Services\GoogleMapsService;
 
 class HotelController extends Controller
 {
     // ************************* */
     // functions for system administrator
     // ************************* */
-    public function store(Request $request)
+    public function store(Request $request,GoogleMapsService $geo)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:25',
@@ -45,6 +45,14 @@ class HotelController extends Controller
         unset($validated['admin_phone']);
 
         // 4) Create hotel linked to the admin user
+        $address=$validated['name'].$validated['location'];
+        $coordinates=$geo->getCoordinatesFromAddress($address);
+        if ($coordinates) {
+            $validated['latitude'] = $coordinates['lat'];
+            $validated['longitude'] = $coordinates['lng'];
+        }else{
+            return back()->withErrors(['location' => 'Invalid location']);
+        }
         $hotel = $admin->hotel()->create($validated);
 
         return redirect()->back()->with('success', 'Hotel created successfully');
@@ -170,4 +178,5 @@ class HotelController extends Controller
             'totalReviews'
         ));
     }
+
 }

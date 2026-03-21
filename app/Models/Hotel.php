@@ -13,6 +13,8 @@ class Hotel extends Model
         'description',
         'email',
         'location',
+        'longitude',
+        'latitude',
         'social_links',
         'image',
         'user_id',
