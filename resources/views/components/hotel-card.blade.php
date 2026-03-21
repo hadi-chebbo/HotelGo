@@ -106,6 +106,71 @@
         </div>
         @endif
 
+        <!-- ─── Location Map Section ──────────────────────────────────────────── -->
+        @if($hotel->latitude && $hotel->longitude)
+        <div class="bg-white rounded-2xl shadow-md border border-white/20 mb-12 overflow-hidden">
+
+            {{-- Card Header --}}
+            <div class="px-6 py-5 flex items-center justify-between border-b border-gray-100">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <div class="bg-blue-100 p-2 rounded-lg">
+                        <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    Hotel Location
+                </h3>
+
+                {{-- "Open in Google Maps" link --}}
+                <a href="https://www.google.com/maps?q={{ $hotel->latitude }},{{ $hotel->longitude }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-purple-600 transition-colors group">
+                    <span>Open in Google Maps</span>
+                    <svg class="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
+            </div>
+
+            {{-- Map iframe --}}
+            <div class="relative">
+                <iframe
+                    title="Hotel location map"
+                    width="100%"
+                    height="380"
+                    style="border: 0; display: block;"
+                    loading="lazy"
+                    allowfullscreen
+                    src="https://www.google.com/maps?q={{ $hotel->latitude }},{{ $hotel->longitude }}&z=15&output=embed">
+                </iframe>
+
+                {{-- Subtle gradient overlay at the bottom to blend into the card --}}
+                <div class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white/30 to-transparent pointer-events-none"></div>
+            </div>
+
+            {{-- Card Footer with coordinates --}}
+            <div class="px-6 py-4 bg-gray-50 flex items-center gap-2 text-sm text-gray-500">
+                <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span class="font-medium text-gray-600">{{ $hotel->location }}</span>
+                <span class="text-gray-300 mx-1">·</span>
+                <span class="font-mono text-xs text-gray-400">
+                    {{ number_format($hotel->latitude, 6) }}, {{ number_format($hotel->longitude, 6) }}
+                </span>
+            </div>
+        </div>
+        @endif
+        {{-- ─────────────────────────────────────────────────────────────────────── --}}
+
         <!-- Available Rooms Section -->
         <section class="mb-16">
             <div class="flex items-center justify-between mb-8">
